@@ -1,11 +1,12 @@
+
 import streamlit as st
-import openai
-import os
+from openai import OpenAI
 from PIL import Image
 import base64
+import os
 
-# Carica la chiave API da Streamlit secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Inizializza il client OpenAI
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Titolo
 st.title("SicurANCE")
@@ -21,9 +22,8 @@ if uploaded_file is not None:
     image_bytes = uploaded_file.read()
     image_base64 = base64.b64encode(image_bytes).decode()
 
-    # Analisi AI
     with st.spinner("Analisi in corso con SicurANCE..."):
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4-vision-preview",
             messages=[
                 {
