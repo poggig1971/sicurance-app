@@ -1,43 +1,47 @@
-st.markdown("## Report SicurANCE – Analisi Avanzata")
-    
-    st.markdown("""
-### **1. Rilevazione dei rischi**
+import streamlit as st
+import openai
+import os
+from PIL import Image
+import base64
 
-#### **Rischio A – Caduta dall’alto**
-- **Descrizione:** Due operatori lavorano sulla copertura in assenza di sistemi di trattenuta individuali (linea vita, imbracature).
-- **Normativa violata:**  
-  - Art. 115, D.Lgs. 81/2008  
-  - Allegato XVIII punto 3.1.4  
-- **Azione correttiva raccomandata:**  
-  - Installazione linea vita o ancoraggi certificati  
-  - Utilizzo di DPI anticaduta  
-  - Aggiornamento POS
+# Carica la chiave API da Streamlit secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-#### **Rischio B – Schiacciamento da carico sospeso**
-- **Descrizione:** Operatori posizionati sotto un elemento prefabbricato in sollevamento. Nessun perimetro di interdizione segnalato.
-- **Normativa violata:**  
-  - Art. 71, comma 4, lett. c), D.Lgs. 81/2008  
-  - Art. 163, comma 2  
-- **Azione correttiva raccomandata:**  
-  - Vietare accesso in zona manovra  
-  - Segnalare l’area  
-  - Coordinare manovre tra gruista e montatori
+# Titolo
+st.title("SicurANCE")
+st.subheader("L'Intelligenza Artificiale per la sicurezza nei cantieri")
 
-#### **Rischio C – Incompletezza ponteggio**
-- **Descrizione:** Il ponteggio non presenta sempre tre elementi (corrente alto, intermedio, tavola fermapiede).
-- **Normativa violata:**  
-  - Allegato XVIII, punto 3.1.4, D.Lgs. 81/2008  
-- **Azione correttiva raccomandata:**  
-  - Completamento con elementi mancanti  
-  - Verifica con check-list preposto
+# Caricamento immagine
+uploaded_file = st.file_uploader("Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Foto caricata", use_container_width=True)
 
----
+    # Converti immagine in base64
+    image_bytes = uploaded_file.read()
+    image_base64 = base64.b64encode(image_bytes).decode()
 
-### **2. Raccomandazioni finali**
-Il cantiere presenta **rischi gravi e immediati**.  
-Si consiglia l’interruzione temporanea delle lavorazioni in quota, la messa in sicurezza delle aree di sollevamento e la formazione del personale.
+    # Analisi AI
+    with st.spinner("Analisi in corso con SicurANCE..."):
+        response = openai.ChatCompletion.create(
+            model="gpt-4-vision-preview",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Sei un tecnico della sicurezza sul lavoro esperto in D.Lgs. 81/2008. Analizza la foto di un cantiere e restituisci un report tecnico dettagliato dei rischi individuabili, con riferimenti normativi e azioni correttive."
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Analizza la seguente immagine di cantiere e genera un report sicurezza completo."},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}}
+                    ]
+                }
+            ],
+            max_tokens=1200
+        )
 
----
+        report = response.choices[0].message.content
 
-**Generato da SicurANCE – L’agente AI per la sicurezza nei cantieri (powered by ANCE)**
-""")
+        st.markdown("## Report SicurANCE â Analisi AI personalizzata")
+        st.markdown(report)
