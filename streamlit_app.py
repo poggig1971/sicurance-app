@@ -23,7 +23,7 @@ if uploaded_file is not None:
 
     with st.spinner("Analisi in corso con SicurANCE..."):
         response = client.chat.completions.create(
-            model="gpt-4-vision-preview",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "system",
