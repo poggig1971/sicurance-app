@@ -1,4 +1,6 @@
-    st.markdown("## Report SicurANCE – Analisi Avanzata")
+    st.image(image, caption="Foto caricata", use_container_width=True)
+
+st.markdown("## Report SicurANCE – Analisi Avanzata")
     
     st.markdown("""
 ### **1. Rilevazione dei rischi**
