@@ -33,6 +33,11 @@ if uploaded_file:
         image_bytes = uploaded_file.read()
         base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
+        # Salva temporaneamente l'immagine per usarla nel PDF
+        image_path = "/tmp/uploaded_image.jpg"
+        with open(image_path, "wb") as f:
+            f.write(image_bytes)
+
         try:
             response = client.chat.completions.create(
                 model="gpt-4o",
@@ -91,7 +96,7 @@ Checklist di verifica (da completare):
 [ ] Assenza di ostacoli o rischi da scivolamento/inciampo  
 """
 
-            # Genera PDF in memoria
+            # Genera PDF
             class PDFReport(FPDF):
                 def header(self):
                     self.set_font("Arial", "B", 12)
@@ -115,23 +120,23 @@ Checklist di verifica (da completare):
 
             pdf = PDFReport()
             pdf.add_page()
+
+            # Inserisci immagine nel PDF
+            pdf.image(image_path, x=10, y=None, w=180)
+            pdf.ln(5)
+
             pdf.chapter_title(f"Data: {datetime.date.today().strftime('%d/%m/%Y')}")
             pdf.chapter_body(report.replace("’", "'"))
             pdf.chapter_title("Checklist di verifica")
             pdf.chapter_body(checklist)
 
-            buffer = io.BytesIO()
-            pdf_bytes = pdf.output(dest='S').encode('latin1')  # genera bytes compatibili
+            # Genera PDF in memoria
+            pdf_bytes = pdf.output(dest='S').encode('latin1')
             buffer = io.BytesIO(pdf_bytes)
 
-            
             st.download_button(
                 label="📥 Scarica il report in PDF",
                 data=buffer,
                 file_name="report_sicurANCE.pdf",
                 mime="application/pdf"
             )
-
-        except Exception as e:
-            st.error("❌ Errore durante la generazione del report.")
-            st.exception(e)
