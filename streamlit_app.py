@@ -121,7 +121,7 @@ Checklist di verifica (da completare):
             pdf.chapter_body(checklist)
 
             buffer = io.BytesIO()
-            pdf.output(buffer)
+            pdf.output(name=buffer, dest='S')
             buffer.seek(0)
 
             st.download_button(
