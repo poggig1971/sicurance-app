@@ -22,13 +22,13 @@ with col1:
 with col2:
     st.markdown(
         """
-        <h1 style='font-size: 24px; margin-bottom: 5px;'>SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TEST SicurANCE Piemonte e Valle d'Aosta</h1>
         <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
         """,
         unsafe_allow_html=True
     )
 
-uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza, senza inquadrare direttamente una persona", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella suo insieme, senza inquadrare direttamente le persone", type=["jpg", "jpeg", "png"])
 
 note = st.text_area("Note aggiuntive (facoltative)")
 
@@ -58,8 +58,7 @@ if uploaded_file:
                             {
                                 "type": "text",
                                 "text": (
-                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
-                                    "Non devi in alcun modo identificare o valutare le persone, ma puoi e devi analizzare esclusivamente se indossano correttamente i dispositivi di protezione individuale (DPI), senza fare riferimento a tratti somatici, genere, età o altri aspetti personali. "
+                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi in alcun modo identificare o valutare le persone, ma puoi e devi analizzare esclusivamente se indossano correttamente i dispositivi di protezione individuale (DPI), senza fare riferimento a tratti somatici, genere, età o altri aspetti personali. "
                                     "Verifica nel dettaglio se:\n"
                                     "- vengono indossati correttamente i DPI obbligatori (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
                                     "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
@@ -67,7 +66,7 @@ if uploaded_file:
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
                                     "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
                                     "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
-                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come una nota."
+                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come una nota. "
                                 )
                             },
                             {
@@ -82,7 +81,7 @@ if uploaded_file:
                 max_tokens=1000,
                 temperature=0.2
             )
-            
+
             report = response.choices[0].message.content
             st.success("✅ Analisi completata")
             st.markdown("### Report tecnico:")
@@ -95,21 +94,6 @@ if uploaded_file:
                 "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
             )
 
-
-            # Mostra l'avvertenza legale anche nell'app, in fondo alla pagina
-with st.expander("Avvertenza sull’utilizzo dell’app", expanded=True):
-    st.markdown(
-        """
-        <div style='font-size: 14px; line-height: 1.5; color: gray;'>
-        <strong>L'app SicurANCE Piemonte e Valle d'Aosta</strong> è uno strumento di supporto all’analisi della sicurezza in cantiere.<br>
-        Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge.<br>
-        Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-            
             # ✅ Generazione PDF
             pdf = FPDF()
             pdf.add_page()
@@ -145,3 +129,16 @@ with st.expander("Avvertenza sull’utilizzo dell’app", expanded=True):
         except Exception as e:
             st.error("❌ Errore durante la generazione del report.")
             st.exception(e)
+
+# Mostra l'avvertenza legale anche nell'app
+with st.expander("ℹ️ Avvertenza sull’utilizzo dell’app", expanded=True):
+    st.markdown(
+        """
+        <div style='font-size: 14px; line-height: 1.5; color: gray;'>
+        <strong>L'app SicurANCE Piemonte e Valle d'Aosta</strong> è uno strumento di supporto all’analisi della sicurezza in cantiere.<br>
+        Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge.<br>
+        Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
