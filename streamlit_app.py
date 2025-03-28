@@ -81,7 +81,6 @@ if uploaded_file:
             st.markdown("### 📄 Report tecnico:")
             st.write(report)
 
-            # ✅ Avvertenza legale
             disclaimer = (
                 "🛡️ **Avvertenza legale**\n\n"
                 "L'applicazione *SicurANCE Piemonte e Valle d'Aosta* fornisce un supporto automatizzato all’analisi visiva dei cantieri edili al fine di promuovere comportamenti conformi alle normative vigenti in materia di sicurezza sul lavoro.\n\n"
@@ -91,12 +90,10 @@ if uploaded_file:
             )
             st.markdown(disclaimer)
 
-            # ✅ Generazione PDF
             pdf = FPDF()
             pdf.add_page()
             pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.add_font("ArialUnicode", fname="DejaVuSans.ttf", uni=True)
-            pdf.set_font("ArialUnicode", size=12)
+            pdf.set_font("Helvetica", size=12)
             pdf.multi_cell(0, 10, "Report tecnico - SicurANCE Piemonte e Valle d'Aosta\n\n")
             pdf.multi_cell(0, 10, report)
             if note:
