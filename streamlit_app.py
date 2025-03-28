@@ -1,4 +1,4 @@
-import streamlit as st
+teimport streamlit as st
 from openai import OpenAI
 import base64
 
@@ -91,7 +91,7 @@ pdf.chapter_body(report_text_clean_ascii)
 pdf.chapter_title("Checklist di verifica")
 pdf.chapter_body(checklist_clean_ascii)
 
-pdf_path = "/mnt/data/report_sicurANCE_con_checklist.pdf"
+pdf_path = "/mnt/data/report_sicurANCE_Piemonte_Valle_Aosta_con_checklist.pdf"
 pdf.output(pdf_path)
 
 pdf_path
