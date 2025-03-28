@@ -1,11 +1,11 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 import os
 from PIL import Image
 import base64
 
-# Imposta la tua API Key in modo sicuro
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Configura la chiave API
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 st.set_page_config(page_title="SicurANCE", layout="centered")
 
@@ -19,33 +19,35 @@ if uploaded_file is not None:
 
     with st.spinner("Analisi in corso..."):
 
-        # Converti l'immagine in base64 per l'input
+        # Converti l'immagine in base64
         image_bytes = uploaded_file.getvalue()
         base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
         try:
-            client = openai.OpenAI()
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4-vision-preview",  # puoi usare anche gpt-4o se supportato
                 messages=[
-                    {"role": "system", "content": "Sei un esperto di sicurezza nei cantieri. Analizza la seguente immagine e segnala le principali criticità legate alla sicurezza sul lavoro."},
-                    {"role": "user", "content": [
-                        {
-                            "type": "text",
-                            "text": "Analizza questa immagine del cantiere e individua i rischi per la sicurezza."
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}"
+                    {
+                        "role": "system",
+                        "content": "Sei un esperto di sicurezza nei cantieri. Analizza le immagini e segnala le principali criticità."
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Analizza questa immagine del cantiere e individua i rischi per la sicurezza."},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{base64_image}"
+                                }
                             }
-                        }
-                    ]}
+                        ]
+                    }
                 ],
-                max_tokens=500
+                max_tokens=700
             )
 
-            st.success("Analisi completata. Ecco il report di sicurezza:")
+            st.success("Analisi completata. Ecco il report:")
             st.markdown(response.choices[0].message.content)
 
         except Exception as e:
