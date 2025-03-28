@@ -95,7 +95,7 @@ if uploaded_file:
             pdf = FPDF()
             pdf.add_page()
             pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.add_font("ArialUnicode", fname="./.fonts/ttf/DejaVuSans.ttf", uni=True)
+            pdf.add_font("ArialUnicode", fname="DejaVuSans.ttf", uni=True)
             pdf.set_font("ArialUnicode", size=12)
             pdf.multi_cell(0, 10, "Report tecnico - SicurANCE Piemonte e Valle d'Aosta\n\n")
             pdf.multi_cell(0, 10, report)
