@@ -83,9 +83,6 @@ if uploaded_file:
             st.success("✅ Analisi completata")
             st.markdown("### Report tecnico:")
             st.write(report)
-with st.form("note_form"):
-    note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
-    submitted = st.form_submit_button("✅ Conferma note")
     
             disclaimer = (
                 "Avvertenza sull’utilizzo dell’app\n\n"
@@ -94,6 +91,10 @@ with st.form("note_form"):
                 "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
             )
 
+with st.form("note_form"):
+    note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
+    submitted = st.form_submit_button("✅ Conferma note")
+            
             # ✅ Generazione PDF
             pdf = FPDF()
             pdf.add_page()
