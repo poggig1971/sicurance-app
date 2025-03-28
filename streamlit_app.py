@@ -7,13 +7,18 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
-# Header con logo + titolo
+# Header con logo e titolo personalizzato
 col1, col2 = st.columns([1, 4])
 with col1:
-    st.image("logo_ance.jpg", width=100)
+    st.image("logo_ance.jpg", width=120)
 with col2:
-    st.title("🦺 SicurANCE Piemonte e Valle d'Aosta 👷")
-    st.subheader("Analisi automatica della sicurezza nei cantieri")
+    st.markdown(
+        """
+        <h1 style='font-size: 38px; margin-bottom: 5px;'>🦺 SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
+        """,
+        unsafe_allow_html=True
+    )
 
 uploaded_file = st.file_uploader("📷 Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
 
@@ -69,12 +74,6 @@ if uploaded_file:
             report = response.choices[0].message.content
             st.success("✅ Analisi completata")
             st.markdown("### 📄 Report tecnico:")
-            st.write(report)
-
-        except Exception as e:
-            st.error("❌ Errore durante la generazione del report.")
-            st.exception(e)
-
             st.write(report)
 
         except Exception as e:
