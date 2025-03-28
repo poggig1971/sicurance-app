@@ -82,7 +82,7 @@ if uploaded_file:
                 max_tokens=1000,
                 temperature=0.2
             )
-
+            
             report = response.choices[0].message.content
             st.success("✅ Analisi completata")
             st.markdown("### Report tecnico:")
@@ -95,6 +95,21 @@ if uploaded_file:
                 "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
             )
 
+
+            # Mostra l'avvertenza legale anche nell'app, in fondo alla pagina
+with st.expander("ℹ️ Avvertenza legale sull’utilizzo dell’app", expanded=True):
+    st.markdown(
+        """
+        <div style='font-size: 14px; line-height: 1.5; color: gray;'>
+        <strong>L'app SicurANCE Piemonte e Valle d'Aosta</strong> è uno strumento di supporto all’analisi della sicurezza in cantiere.<br>
+        Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge.<br>
+        Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+            
             # ✅ Generazione PDF
             pdf = FPDF()
             pdf.add_page()
