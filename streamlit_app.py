@@ -5,12 +5,15 @@ import base64
 # Inizializza il client con la chiave segreta
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.image("https://piemonte.ance.it/images/LOGO_PIEMONTE_VALLEDAOSTA_edit.png", width=200)
+st.set_page_config(page_title="SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
-st.set_page_config(page_title="👷 SicurANCE Piemonte Valle d'Aosta 🦺", layout="centered")
-st.title("👷 SicurANCE Piemonte Valle d'Aosta 🦺")
-st.subheader("Analisi automatica della sicurezza nei cantieri")
-
+# Header con logo + titolo
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("logo_ance.jpg", width=100)
+with col2:
+    st.title("🦺 SicurANCE Piemonte e Valle d'Aosta 👷")
+    st.subheader("Analisi automatica della sicurezza nei cantieri")
 
 uploaded_file = st.file_uploader("📷 Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
 
@@ -66,6 +69,12 @@ if uploaded_file:
             report = response.choices[0].message.content
             st.success("✅ Analisi completata")
             st.markdown("### 📄 Report tecnico:")
+            st.write(report)
+
+        except Exception as e:
+            st.error("❌ Errore durante la generazione del report.")
+            st.exception(e)
+
             st.write(report)
 
         except Exception as e:
