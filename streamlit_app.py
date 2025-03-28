@@ -1,8 +1,9 @@
 import streamlit as st
 from openai import OpenAI
 import base64
-from fpdf import FPDF
 import datetime
+import io
+from fpdf import FPDF
 
 # Inizializza il client con la chiave segreta
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -56,7 +57,7 @@ if uploaded_file:
                                     "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
                                     "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
-                                    "- l'ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
+                                    "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
                                     "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati."
                                 )
                             },
@@ -78,11 +79,23 @@ if uploaded_file:
             st.markdown("### 📄 Report tecnico:")
             st.write(report)
 
-            # ✅ Generazione PDF con checklist
+            # Checklist da includere
+            checklist = """
+Checklist di verifica (da completare):
+
+[ ] Tutti i lavoratori indossano il casco protettivo  
+[ ] Presenza di segnaletica di sicurezza nelle aree operative  
+[ ] Verifica dell'ancoraggio di ponteggi e trabattelli  
+[ ] Utilizzo corretto dei DPI (guanti, occhiali, scarpe)  
+[ ] Delimitazioni visibili delle aree a rischio  
+[ ] Assenza di ostacoli o rischi da scivolamento/inciampo  
+"""
+
+            # Genera PDF in memoria
             class PDFReport(FPDF):
                 def header(self):
                     self.set_font("Arial", "B", 12)
-                    self.cell(0, 10, "Report SicurANCE Piemonte Valle d'Aosta", ln=True, align="C")
+                    self.cell(0, 10, "Report SicurANCE", ln=True, align="C")
                     self.ln(5)
 
                 def footer(self):
@@ -100,17 +113,6 @@ if uploaded_file:
                     self.multi_cell(0, 10, body)
                     self.ln()
 
-            checklist = """
-Checklist di verifica (da completare):
-
-[ ] Tutti i lavoratori indossano il casco protettivo
-[ ] Presenza di segnaletica di sicurezza nelle aree operative
-[ ] Verifica dell'ancoraggio di ponteggi e trabattelli
-[ ] Utilizzo corretto dei DPI (guanti, occhiali, scarpe)
-[ ] Delimitazioni visibili delle aree a rischio
-[ ] Assenza di ostacoli o rischi da scivolamento/inciampo
-"""
-
             pdf = PDFReport()
             pdf.add_page()
             pdf.chapter_title(f"Data: {datetime.date.today().strftime('%d/%m/%Y')}")
@@ -118,12 +120,13 @@ Checklist di verifica (da completare):
             pdf.chapter_title("Checklist di verifica")
             pdf.chapter_body(checklist)
 
-            pdf_path = "/mnt/data/report_sicurANCE_Piemonte_Valle_d_Aostacompleto.pdf"
-            pdf.output(pdf_path)
+            buffer = io.BytesIO()
+            pdf.output(buffer)
+            buffer.seek(0)
 
             st.download_button(
-                label="📥 Scarica il report completo in PDF",
-                data=open(pdf_path, "rb").read(),
+                label="📥 Scarica il report in PDF",
+                data=buffer,
                 file_name="report_sicurANCE.pdf",
                 mime="application/pdf"
             )
