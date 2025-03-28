@@ -1,9 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 import base64
-import datetime
-import io
 from fpdf import FPDF
+from io import BytesIO
 
 # Inizializza il client con la chiave segreta
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -24,6 +23,7 @@ with col2:
     )
 
 uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza", type=["jpg", "jpeg", "png"])
+note = st.text_area("✏️ Note (facoltative)")
 
 if uploaded_file:
     st.image(uploaded_file, caption="📍 Immagine caricata", use_container_width=True)
@@ -32,11 +32,6 @@ if uploaded_file:
 
         image_bytes = uploaded_file.read()
         base64_image = base64.b64encode(image_bytes).decode("utf-8")
-
-        # Salva temporaneamente l'immagine per usarla nel PDF
-        image_path = "/tmp/uploaded_image.jpg"
-        with open(image_path, "wb") as f:
-            f.write(image_bytes)
 
         try:
             response = client.chat.completions.create(
@@ -84,59 +79,33 @@ if uploaded_file:
             st.markdown("### 📄 Report tecnico:")
             st.write(report)
 
-            # Checklist da includere
-            checklist = """
-Checklist di verifica (da completare):
-
-[ ] Tutti i lavoratori indossano il casco protettivo  
-[ ] Presenza di segnaletica di sicurezza nelle aree operative  
-[ ] Verifica dell'ancoraggio di ponteggi e trabattelli  
-[ ] Utilizzo corretto dei DPI (guanti, occhiali, scarpe)  
-[ ] Delimitazioni visibili delle aree a rischio  
-[ ] Assenza di ostacoli o rischi da scivolamento/inciampo  
-"""
-
-            # Genera PDF
-            class PDFReport(FPDF):
-                def header(self):
-                    self.set_font("Arial", "B", 12)
-                    self.cell(0, 10, "Report SicurANCE", ln=True, align="C")
-                    self.ln(5)
-
-                def footer(self):
-                    self.set_y(-15)
-                    self.set_font("Arial", "I", 8)
-                    self.cell(0, 10, f"Pagina {self.page_no()}", align="C")
-
-                def chapter_title(self, title):
-                    self.set_font("Arial", "B", 12)
-                    self.cell(0, 10, title, ln=True)
-                    self.ln(5)
-
-                def chapter_body(self, body):
-                    self.set_font("Arial", "", 11)
-                    self.multi_cell(0, 10, body)
-                    self.ln()
-
-            pdf = PDFReport()
+            # Generazione PDF
+            pdf = FPDF()
             pdf.add_page()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.set_font("Arial", size=12)
 
-            # Inserisci immagine nel PDF
-            pdf.image(image_path, x=10, y=None, w=180)
-            pdf.ln(5)
+            pdf.multi_cell(0, 10, "Report tecnico SicurANCE\n", align="L")
+            pdf.multi_cell(0, 10, report, align="L")
 
-            pdf.chapter_title(f"Data: {datetime.date.today().strftime('%d/%m/%Y')}")
-            pdf.chapter_body(report.replace("’", "'"))
-            pdf.chapter_title("Checklist di verifica")
-            pdf.chapter_body(checklist)
+            if note:
+                pdf.ln(5)
+                pdf.set_font("Arial", style="B", size=12)
+                pdf.cell(0, 10, "Note dell'utente:", ln=True)
+                pdf.set_font("Arial", size=12)
+                pdf.multi_cell(0, 10, note)
 
-            # Genera PDF in memoria
-            pdf_bytes = pdf.output(dest='S').encode('latin1')
-            buffer = io.BytesIO(pdf_bytes)
+            pdf_output = BytesIO()
+            pdf.output(pdf_output)
+            pdf_output.seek(0)
 
             st.download_button(
                 label="📥 Scarica il report in PDF",
-                data=buffer,
+                data=pdf_output,
                 file_name="report_sicurANCE.pdf",
                 mime="application/pdf"
             )
+
+        except Exception as e:
+            st.error("❌ Errore durante la generazione del report.")
+            st.exception(e)
