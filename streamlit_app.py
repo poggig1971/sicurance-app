@@ -10,11 +10,11 @@ st.set_page_config(page_title="SicurANCE Piemonte e Valle d'Aosta", layout="cent
 # Header con logo e titolo personalizzato
 col1, col2 = st.columns([1, 4])
 with col1:
-    st.image("logo_ance.jpg", width=120)
+    st.image("logo_ance.jpg", width=220)
 with col2:
     st.markdown(
         """
-        <h1 style='font-size: 38px; margin-bottom: 5px;'>🦺 SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h1 style='font-size: 24px; margin-bottom: 5px;'>🦺 SicurANCE Piemonte e Valle d'Aosta</h1>
         <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
         """,
         unsafe_allow_html=True
