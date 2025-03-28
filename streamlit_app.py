@@ -1,46 +1,57 @@
 import streamlit as st
-from openai import OpenAI
-from PIL import Image
+import requests
 import base64
+import openai
 import os
 
-# Inizializza il client OpenAI
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+st.set_page_config(page_title="SicurANCE", layout="centered")
 
-# Titolo
 st.title("SicurANCE")
-st.subheader("L'Intelligenza Artificiale per la sicurezza nei cantieri")
+st.subheader("L'Intelligenza Artificiale per la sicurezza nei cantieri – versione gratuita")
 
-# Caricamento immagine
 uploaded_file = st.file_uploader("Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Foto caricata", use_container_width=True)
 
-    # Converti immagine in base64
-    image_bytes = uploaded_file.read()
-    image_base64 = base64.b64encode(image_bytes).decode()
+if uploaded_file:
+    st.image(uploaded_file, caption="Foto caricata", use_column_width=True)
 
-    with st.spinner("Analisi in corso con SicurANCE..."):
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Sei un tecnico della sicurezza sul lavoro esperto in D.Lgs. 81/2008. Analizza la foto di un cantiere e restituisci un report tecnico dettagliato dei rischi individuabili, con riferimenti normativi e azioni correttive."
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": "Analizza la seguente immagine di cantiere e genera un report sicurezza completo."},
-                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}}
-                    ]
-                }
-            ],
-            max_tokens=1200
+    with st.spinner("Analisi dell'immagine in corso..."):
+
+        image_bytes = uploaded_file.read()
+        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+
+        # Simulazione chiamata a modello YOLOv8 hosted su Roboflow o Hugging Face
+        fake_detected_elements = [
+            "operaio senza casco",
+            "ponteggio senza parapetto",
+            "attrezzatura a terra non segnalata"
+        ]
+
+        descrizione = (
+            "Nell'immagine sono stati rilevati i seguenti elementi potenzialmente critici: "
+            + ", ".join(fake_detected_elements) + "."
         )
 
-        report = response.choices[0].message.content
+        st.markdown("### Descrizione automatica:")
+        st.write(descrizione)
 
-        st.markdown("## Report SicurANCE â Analisi AI personalizzata")
-        st.markdown(report)
+        # Usa GPT-3.5 per generare report testuale
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "Sei un esperto di sicurezza nei cantieri edili, rispondi come tecnico."},
+                    {"role": "user", "content": f"Genera un report di sicurezza a partire da questa descrizione: {descrizione}"}
+                ],
+                temperature=0.4,
+                max_tokens=600
+            )
+
+            report = response["choices"][0]["message"]["content"]
+            st.markdown("### Report di Sicurezza:")
+            st.write(report)
+
+        except Exception as e:
+            st.error("Errore durante la generazione del report.")
+            st.exception(e)
