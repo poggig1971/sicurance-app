@@ -79,3 +79,19 @@ if uploaded_file:
         except Exception as e:
             st.error("❌ Errore durante la generazione del report.")
             st.exception(e)
+
+# Sostituzione dei caratteri non compatibili nella checklist
+checklist_clean_ascii = checklist.replace("’", "'")
+
+# Ricreazione del PDF completo con la checklist pulita
+pdf = PDFReport()
+pdf.add_page()
+pdf.chapter_title(f"Data: {datetime.date.today().strftime('%d/%m/%Y')}")
+pdf.chapter_body(report_text_clean_ascii)
+pdf.chapter_title("Checklist di verifica")
+pdf.chapter_body(checklist_clean_ascii)
+
+pdf_path = "/mnt/data/report_sicurANCE_con_checklist.pdf"
+pdf.output(pdf_path)
+
+pdf_path
