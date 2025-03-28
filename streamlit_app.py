@@ -1,17 +1,17 @@
+from fpdf import FPDF
 import streamlit as st
 from openai import OpenAI
 import base64
-from fpdf import FPDF
+from io import BytesIO
 import tempfile
 import os
-from io import BytesIO
 
-# Inizializza il client con la chiave segreta
+# Inizializza client OpenAI
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
-# Header con logo e titolo personalizzato
+# Intestazione con logo e titolo
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("logo_ance.jpg", width=220)
@@ -81,37 +81,42 @@ if uploaded_file:
             st.markdown("### 📄 Report tecnico:")
             st.write(report)
 
-            # Creazione PDF
+            # Crea PDF
             pdf = FPDF()
             pdf.add_page()
-            pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.set_font("Arial", 'B', 14)
+
+            # Carica font Unicode compatibile
+            font_path = "DejaVuSans.ttf"  # Assicurati che il font sia presente nella cartella
+            pdf.add_font("DejaVu", "", font_path, uni=True)
+            pdf.set_font("DejaVu", size=12)
+
             pdf.cell(0, 10, "Report tecnico SicurANCE", ln=True)
 
-            # Salva immagine temporaneamente per inserirla nel PDF
+            # Salva immagine temporanea
             with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
                 tmp_file.write(image_bytes)
-                tmp_image_path = tmp_file.name
+                image_path = tmp_file.name
 
             try:
-                pdf.image(tmp_image_path, x=10, y=25, w=180)
-                pdf.ln(95)
+                pdf.image(image_path, x=10, y=25, w=180)
+                pdf.ln(100)
             except Exception as e:
                 st.warning("⚠️ Impossibile inserire immagine nel PDF.")
                 st.exception(e)
 
-            pdf.set_font("Arial", size=12)
             pdf.multi_cell(0, 10, report)
 
             if note:
                 pdf.ln(5)
-                pdf.set_font("Arial", 'B', 12)
+                pdf.set_font("DejaVu", style="B", size=12)
                 pdf.cell(0, 10, "Note dell’utente:", ln=True)
-                pdf.set_font("Arial", size=12)
+                pdf.set_font("DejaVu", size=12)
                 pdf.multi_cell(0, 10, note)
 
+            # Esporta come BytesIO (non salva su disco)
             pdf_output = BytesIO()
-            pdf_output.write(pdf.output(dest='S').encode('latin1'))
+            pdf_bytes = pdf.output(dest="S").encode("utf-8")
+            pdf_output.write(pdf_bytes)
             pdf_output.seek(0)
 
             st.download_button(
@@ -121,8 +126,9 @@ if uploaded_file:
                 mime="application/pdf"
             )
 
-            os.remove(tmp_image_path)
+            os.remove(image_path)
 
         except Exception as e:
             st.error("❌ Errore durante la generazione del report.")
             st.exception(e)
+
