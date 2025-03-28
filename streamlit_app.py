@@ -89,7 +89,7 @@ if uploaded_file:
             st.write(report)
 
             disclaimer = (
-                "Avvertenza \n\n"
+                "Avvertenza sull’utilizzo dell’app\n\n"
                 "L'app SicurANCE Piemonte e Valle d'Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
                 "Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge. "
                 "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
@@ -97,7 +97,7 @@ if uploaded_file:
 
 
             # Mostra l'avvertenza legale anche nell'app, in fondo alla pagina
-with st.expander("ℹ️ Avvertenza legale sull’utilizzo dell’app", expanded=True):
+with st.expander("Avvertenza sull’utilizzo dell’app", expanded=True):
     st.markdown(
         """
         <div style='font-size: 14px; line-height: 1.5; color: gray;'>
