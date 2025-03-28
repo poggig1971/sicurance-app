@@ -5,14 +5,16 @@ import base64
 # Inizializza il client con la chiave segreta
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.set_page_config(page_title="🦺 SicurANCE", layout="centered")
+st.set_page_config(page_title="👷 SicurANCE Piemonte Valle d'Aosta 🦺", layout="centered")
 st.title("🦺 SicurANCE")
 st.subheader("Analisi automatica della sicurezza nei cantieri")
+
+st.image("https://www.piemonte.ance.it/images/LOGO_PIEMONTE_VALLEDAOSTA_edit.png", width=200)
 
 uploaded_file = st.file_uploader("📷 Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
-    st.image(uploaded_file, caption="📍 Immagine caricata", use_column_width=True)
+    st.image(uploaded_file, caption="📍 Immagine caricata", use_container_width=True)
 
     with st.spinner("🧠 Analisi in corso..."):
 
