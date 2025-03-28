@@ -48,7 +48,8 @@ if uploaded_file:
                         "role": "system",
                         "content": (
                             "Sei un esperto in sicurezza nei cantieri edili. "
-                            "Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
+                            "Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008. "
+                            "Fornisci sempre il report in lingua italiana."
                         )
                     },
                     {
@@ -57,16 +58,17 @@ if uploaded_file:
                             {
                                 "type": "text",
                                 "text": (
-                                    "Analizza l'immagine seguente come **esperto di sicurezza nei cantieri edili**, ai sensi del D.Lgs. 81/2008. "
-                                    "Fornisci un **report tecnico dettagliato e in lingua italiana**, incentrato esclusivamente sull’osservazione degli elementi visibili.\n\n"
-                                    "**Non valutare le persone in quanto tali**, ma limita la tua analisi a ciò che è visibile nella foto, ad esempio:\n"
-                                    "- Se i lavoratori **indossano correttamente i dispositivi di protezione individuale (DPI)**: casco, guanti, imbracature, occhiali, scarpe antinfortunistiche\n"
-                                    "- Se vi sono **lavori in quota** o **carichi sospesi** in condizioni non sicure\n"
-                                    "- Se i **ponteggi** o i **trabattelli** sono conformi alle norme (parapetti, tavole fermapiede, accessi)\n"
-                                    "- Se esiste **segnaletica di sicurezza, recinzioni** o delimitazioni delle aree di rischio\n"
-                                    "- Se l’ambiente presenta **rischi elettrici, chimici, meccanici, da inciampo o scivolamento**\n\n"
-                                    "Riporta tutte le criticità **visibili** con tono tecnico e oggettivo, indicando ove possibile anche gli **articoli del D.Lgs. 81/2008** violati.\n"
-                                    "**Non fornire risposte generiche.**"
+                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
+                                    "Non devi in alcun modo identificare o valutare le persone, ma puoi e devi analizzare esclusivamente se indossano correttamente "
+                                    "i dispositivi di protezione individuale (DPI), senza fare riferimento a tratti somatici, genere, età o altri aspetti personali. "
+                                    "Verifica nel dettaglio se:\n"
+                                    "- vengono indossati correttamente i DPI obbligatori (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
+                                    "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
+                                    "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
+                                    "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
+                                    "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
+                                    "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
+                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come un verbale ispettivo. "
                                 )
                             },
                             {
