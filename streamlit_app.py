@@ -29,7 +29,6 @@ with col2:
     )
 
 uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella suo insieme, senza inquadrare direttamente le persone", type=["jpg", "jpeg", "png"])
-note = st.text_area("Note aggiuntive (facoltative)")
 
 with st.form("note_form"):
     note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
