@@ -22,13 +22,13 @@ with col1:
 with col2:
     st.markdown(
         """
-        <h1 style='font-size: 24px; margin-bottom: 5px;'>SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TEST SicurANCE Piemonte e Valle d'Aosta</h1>
         <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
         """,
         unsafe_allow_html=True
     )
 
-uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza, senqua inquadrare direttamente una persona", type=["jpg", "jpeg", "png"])
 
 note = st.text_area("Note aggiuntive (facoltative)")
 
@@ -66,7 +66,7 @@ if uploaded_file:
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
                                     "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
                                     "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
-                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come una relazione. "
+                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come una nota. "
                                 )
                             },
                             {
