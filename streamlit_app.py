@@ -30,9 +30,7 @@ with col2:
 
 uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza", type=["jpg", "jpeg", "png"])
 
-with st.form("note_form"):
-    note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
-    submitted = st.form_submit_button("✅ Conferma note")
+note = st.text_area("Note aggiuntive (facoltative)")
 
 if uploaded_file:
     st.image(uploaded_file, caption="📍 Immagine caricata", use_container_width=True)
@@ -49,7 +47,8 @@ if uploaded_file:
                     {
                         "role": "system",
                         "content": (
-                            "Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
+                            "Sei un esperto in sicurezza nei cantieri edili. "
+                            "Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
                         )
                     },
                     {
@@ -58,15 +57,16 @@ if uploaded_file:
                             {
                                 "type": "text",
                                 "text": (
-                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
-                                    "Non devi identificare le persone, ma puoi valutarne l'equipaggiamento e il comportamento. "
-                                    "Verifica nel dettaglio se:\n"
-                                    "- vengono indossati correttamente i dispositivi di protezione individuale (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
-                                    "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
-                                    "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
-                                    "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
-                                    "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
-                                    "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati."
+                                    "Analizza l'immagine seguente come **esperto di sicurezza nei cantieri edili**, ai sensi del D.Lgs. 81/2008. "
+                                    "Fornisci un **report tecnico dettagliato e in lingua italiana**, incentrato esclusivamente sull’osservazione degli elementi visibili.\n\n"
+                                    "**Non valutare le persone in quanto tali**, ma limita la tua analisi a ciò che è visibile nella foto, ad esempio:\n"
+                                    "- Se i lavoratori **indossano correttamente i dispositivi di protezione individuale (DPI)**: casco, guanti, imbracature, occhiali, scarpe antinfortunistiche\n"
+                                    "- Se vi sono **lavori in quota** o **carichi sospesi** in condizioni non sicure\n"
+                                    "- Se i **ponteggi** o i **trabattelli** sono conformi alle norme (parapetti, tavole fermapiede, accessi)\n"
+                                    "- Se esiste **segnaletica di sicurezza, recinzioni** o delimitazioni delle aree di rischio\n"
+                                    "- Se l’ambiente presenta **rischi elettrici, chimici, meccanici, da inciampo o scivolamento**\n\n"
+                                    "Riporta tutte le criticità **visibili** con tono tecnico e oggettivo, indicando ove possibile anche gli **articoli del D.Lgs. 81/2008** violati.\n"
+                                    "**Non fornire risposte generiche.**"
                                 )
                             },
                             {
