@@ -65,7 +65,7 @@ if uploaded_file:
                                     "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
                                     "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
-                                    "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
+                                    "Fornisci una nota completa di tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
                                     "L’analisi deve rimanere in lingua italiana ed essere strutturata come una nota. "
                                 )
                             },
