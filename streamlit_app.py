@@ -6,9 +6,9 @@ import base64
 # Inizializza il client OpenAI con la tua API key
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.set_page_config(page_title="SicurANCE", layout="centered")
+st.set_page_config(page_title="SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
-st.title("🦺 SicurANCE")
+st.title("🦺 SicurANCE Piemonte e Valle d'Aosta")
 st.subheader("L'agente AI per la sicurezza nei cantieri")
 
 uploaded_file = st.file_uploader("📷 Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
@@ -29,7 +29,7 @@ if uploaded_file:
                 messages=[
                     {
                         "role": "system",
-                        "content": "Sei un esperto di sicurezza nei cantieri edili. Analizza le immagini per identificare criticità relative alla sicurezza sul lavoro."
+                        "content": "Tu sei un esperto di sicurezza nei cantieri edili, con particolare attenzione alle normative vigenti nelle regioni Piemonte e Valle d'Aosta. Quando ricevi una foto, la analizzi per individuare qualsiasi violazione del D.Lgs. 81/2008 e di eventuali normative regionali applicabili in Piemonte e Valle d'Aosta. Per ogni rischio che identifichi, spiega chiaramente il problema, cita l’articolo della norma violata (sia nazionale che regionale, se presente), e suggerisci una misura correttiva."
                     },
                     {
                         "role": "user",
