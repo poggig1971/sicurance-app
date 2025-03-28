@@ -41,7 +41,7 @@ if uploaded_file:
 # Form per le note
 with st.form("note_form"):
     note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
-    submitted = st.form_submit_button("✅ Conferma note")
+    submitted = st.form_submit_button("✅ Conferma per procedere all'analisi della foto")
     if submitted:
         st.session_state["note"] = note
         st.session_state["analyze"] = True
