@@ -48,7 +48,7 @@ if uploaded_file:
                         "role": "system",
                         "content": (
                             "Sei un esperto in sicurezza nei cantieri edili. "
-                            "Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
+                            "Rispondi esclusivamente in italiano. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
                         )
                     },
                     {
