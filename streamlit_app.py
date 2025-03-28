@@ -13,7 +13,7 @@ def sanitize_text(text):
 # Inizializza il client con la chiave segreta
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.set_page_config(page_title="SicurANCE Piemonte e Valle d'Aosta", layout="centered")
+st.set_page_config(page_title="TEST SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
 # Header con logo e titolo personalizzato
 col1, col2 = st.columns([1, 4])
