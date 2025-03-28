@@ -5,11 +5,12 @@ import base64
 # Inizializza il client con la chiave segreta
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+st.image("https://piemonte.ance.it/images/LOGO_PIEMONTE_VALLEDAOSTA_edit.png", width=200)
+
 st.set_page_config(page_title="👷 SicurANCE Piemonte Valle d'Aosta 🦺", layout="centered")
-st.title("🦺 SicurANCE")
+st.title("👷 SicurANCE Piemonte Valle d'Aosta 🦺")
 st.subheader("Analisi automatica della sicurezza nei cantieri")
 
-st.image("https://www.piemonte.ance.it/images/LOGO_PIEMONTE_VALLEDAOSTA_edit.png", width=200)
 
 uploaded_file = st.file_uploader("📷 Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
 
