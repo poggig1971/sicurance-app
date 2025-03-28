@@ -30,7 +30,9 @@ with col2:
 
 uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza", type=["jpg", "jpeg", "png"])
 
-note = st.text_area("Note aggiuntive (facoltative)")
+with st.form("note_form"):
+    note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
+    submitted = st.form_submit_button("✅ Conferma note")
 
 if uploaded_file:
     st.image(uploaded_file, caption="📍 Immagine caricata", use_container_width=True)
@@ -47,8 +49,7 @@ if uploaded_file:
                     {
                         "role": "system",
                         "content": (
-                            "Sei un esperto in sicurezza nei cantieri edili. "
-                            "Rispondi esclusivamente in italiano. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
+                            "Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
                         )
                     },
                     {
