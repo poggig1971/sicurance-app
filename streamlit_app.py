@@ -29,7 +29,10 @@ with col2:
     )
 
 uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella suo insieme, senza inquadrare direttamente le persone", type=["jpg", "jpeg", "png"])
-
+with st.form("note_form"):
+    note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
+    submitted = st.form_submit_button("✅ Conferma note")
+    
 if uploaded_file:
     st.image(uploaded_file, caption="📍 Immagine caricata", use_container_width=True)
 
@@ -90,10 +93,6 @@ if uploaded_file:
                 "Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge. "
                 "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
             )
-
-with st.form("note_form"):
-    note = st.text_area("Note aggiuntive (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
-    submitted = st.form_submit_button("✅ Conferma note")
             
             # ✅ Generazione PDF
             pdf = FPDF()
