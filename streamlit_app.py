@@ -1,40 +1,40 @@
 import streamlit as st
 from openai import OpenAI
 import os
-from PIL import Image
 import base64
 
-# Configura la chiave API
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Inizializza il client OpenAI con la tua API key
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="SicurANCE", layout="centered")
 
-st.title("**SicurANCE**")
-st.subheader("L'Intelligenza Artificiale per la sicurezza nei cantieri")
+st.title("🦺 SicurANCE")
+st.subheader("L'agente AI per la sicurezza nei cantieri")
 
-uploaded_file = st.file_uploader("Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("📷 Carica una foto del cantiere", type=["jpg", "jpeg", "png"])
 
-if uploaded_file is not None:
-    st.image(uploaded_file, caption="Foto caricata", use_column_width=True)
-
-    with st.spinner("Analisi in corso..."):
+if uploaded_file:
+    st.image(uploaded_file, caption="📍 Immagine caricata", use_column_width=True)
+    
+    with st.spinner("🔍 Analisi dell'immagine in corso..."):
 
         # Converti l'immagine in base64
-        image_bytes = uploaded_file.getvalue()
+        image_bytes = uploaded_file.read()
         base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
         try:
+            # Richiesta a GPT con input immagine
             response = client.chat.completions.create(
-                model="gpt-4-vision-preview",  # puoi usare anche gpt-4o se supportato
+                model="gpt-4o",  # oppure "gpt-4-vision-preview" se disponibile
                 messages=[
                     {
                         "role": "system",
-                        "content": "Sei un esperto di sicurezza nei cantieri. Analizza le immagini e segnala le principali criticità."
+                        "content": "Sei un esperto di sicurezza nei cantieri edili. Analizza le immagini per identificare criticità relative alla sicurezza sul lavoro."
                     },
                     {
                         "role": "user",
                         "content": [
-                            {"type": "text", "text": "Analizza questa immagine del cantiere e individua i rischi per la sicurezza."},
+                            { "type": "text", "text": "Analizza questa immagine e individua tutti i rischi per la sicurezza presenti nel cantiere." },
                             {
                                 "type": "image_url",
                                 "image_url": {
@@ -44,11 +44,14 @@ if uploaded_file is not None:
                         ]
                     }
                 ],
-                max_tokens=700
+                max_tokens=800
             )
 
-            st.success("Analisi completata. Ecco il report:")
-            st.markdown(response.choices[0].message.content)
+            report = response.choices[0].message.content
+            st.success("✅ Analisi completata")
+            st.markdown("### 📝 Report di Sicurezza:")
+            st.write(report)
 
         except Exception as e:
-            st.error(f"Errore durante la generazione del report:\n\n{e}")
+            st.error("❌ Errore durante la generazione del report.")
+            st.exception(e)
