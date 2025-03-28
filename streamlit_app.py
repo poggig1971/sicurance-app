@@ -2,6 +2,8 @@ import streamlit as st
 from openai import OpenAI
 import base64
 from fpdf import FPDF
+import tempfile
+import os
 from io import BytesIO
 
 # Inizializza il client con la chiave segreta
@@ -23,13 +25,12 @@ with col2:
     )
 
 uploaded_file = st.file_uploader("📷 Carica una foto che riprenda il cantiere nella sua interezza", type=["jpg", "jpeg", "png"])
-note = st.text_area("✏️ Note (facoltative)")
+note = st.text_area("📝 Note personali (facoltative)", placeholder="Scrivi eventuali osservazioni o note personali...")
 
 if uploaded_file:
     st.image(uploaded_file, caption="📍 Immagine caricata", use_container_width=True)
 
     with st.spinner("🧠 Analisi in corso..."):
-
         image_bytes = uploaded_file.read()
         base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
@@ -58,7 +59,8 @@ if uploaded_file:
                                     "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
                                     "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
-                                    "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati."
+                                    "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
+                                    "Rispondi in lingua italiana, in modo tecnico e ordinato."
                                 )
                             },
                             {
@@ -70,7 +72,7 @@ if uploaded_file:
                         ]
                     }
                 ],
-                max_tokens=1000,
+                max_tokens=1500,
                 temperature=0.2
             )
 
@@ -79,24 +81,37 @@ if uploaded_file:
             st.markdown("### 📄 Report tecnico:")
             st.write(report)
 
-            # Generazione PDF
+            # Creazione PDF
             pdf = FPDF()
             pdf.add_page()
             pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.set_font("Arial", size=12)
+            pdf.set_font("Arial", 'B', 14)
+            pdf.cell(0, 10, "Report tecnico SicurANCE", ln=True)
 
-            pdf.multi_cell(0, 10, "Report tecnico SicurANCE\n", align="L")
-            pdf.multi_cell(0, 10, report, align="L")
+            # Salva immagine temporaneamente per inserirla nel PDF
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
+                tmp_file.write(image_bytes)
+                tmp_image_path = tmp_file.name
+
+            try:
+                pdf.image(tmp_image_path, x=10, y=25, w=180)
+                pdf.ln(95)
+            except Exception as e:
+                st.warning("⚠️ Impossibile inserire immagine nel PDF.")
+                st.exception(e)
+
+            pdf.set_font("Arial", size=12)
+            pdf.multi_cell(0, 10, report)
 
             if note:
                 pdf.ln(5)
-                pdf.set_font("Arial", style="B", size=12)
-                pdf.cell(0, 10, "Note dell'utente:", ln=True)
+                pdf.set_font("Arial", 'B', 12)
+                pdf.cell(0, 10, "Note dell’utente:", ln=True)
                 pdf.set_font("Arial", size=12)
                 pdf.multi_cell(0, 10, note)
 
             pdf_output = BytesIO()
-            pdf.output(pdf_output)
+            pdf_output.write(pdf.output(dest='S').encode('latin1'))
             pdf_output.seek(0)
 
             st.download_button(
@@ -105,6 +120,8 @@ if uploaded_file:
                 file_name="report_sicurANCE.pdf",
                 mime="application/pdf"
             )
+
+            os.remove(tmp_image_path)
 
         except Exception as e:
             st.error("❌ Errore durante la generazione del report.")
