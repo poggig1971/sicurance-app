@@ -28,21 +28,23 @@ if uploaded_file:
                 model="gpt-4o",  # oppure "gpt-4-vision-preview" se disponibile
                 messages=[
                     {
-                        "role": "system",
-                        "content": "Tu sei un esperto di sicurezza nei cantieri edili, con particolare attenzione alle normative vigenti nelle regioni Piemonte e Valle d'Aosta. Quando ricevi una foto, la analizzi per individuare qualsiasi violazione del D.Lgs. 81/2008 e di eventuali normative regionali applicabili in Piemonte e Valle d'Aosta. Per ogni rischio che identifichi, spiega chiaramente il problema, cita l’articolo della norma violata (sia nazionale che regionale, se presente), e suggerisci una misura correttiva."
-                    },
-                    {
-                        "role": "user",
-                        "content": [
-                            { "type": "text", "text": "Analizza questa immagine e individua tutti i rischi per la sicurezza presenti nel cantiere." },
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:image/jpeg;base64,{base64_image}"
-                                }
-                            }
-                        ]
-                    }
+  "role": "user",
+  "content": [
+    { "type": "text", "text":
+      "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi identificare le persone, ma puoi valutarne l'equipaggiamento e il comportamento. Verifica nel dettaglio se:
+- vengono indossati correttamente i dispositivi di protezione individuale (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)
+- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi
+- i ponteggi o trabattelli rispettano i requisiti normativi
+- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate
+- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo
+
+Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati." },
+    {
+      "type": "image_url",
+      "image_url": { "url": f"data:image/jpeg;base64,{base64_image}" }
+    }
+  ]
+}
                 ],
                 max_tokens=800
             )
