@@ -58,9 +58,7 @@ if uploaded_file:
                             {
                                 "type": "text",
                                 "text": (
-                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
-                                    "Non devi in alcun modo identificare o valutare le persone, ma puoi e devi analizzare esclusivamente se indossano correttamente "
-                                    "i dispositivi di protezione individuale (DPI), senza fare riferimento a tratti somatici, genere, età o altri aspetti personali. "
+                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi in alcun modo identificare o valutare le persone, ma puoi e devi analizzare esclusivamente se indossano correttamente i dispositivi di protezione individuale (DPI), senza fare riferimento a tratti somatici, genere, età o altri aspetti personali. "
                                     "Verifica nel dettaglio se:\n"
                                     "- vengono indossati correttamente i DPI obbligatori (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
                                     "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
@@ -68,7 +66,7 @@ if uploaded_file:
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
                                     "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
                                     "Fornisci un report tecnico completo con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati. "
-                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come un verbale ispettivo. "
+                                    "L’analisi deve rimanere in lingua italiana ed essere strutturata come una relazione. "
                                 )
                             },
                             {
