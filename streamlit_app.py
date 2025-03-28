@@ -121,9 +121,10 @@ Checklist di verifica (da completare):
             pdf.chapter_body(checklist)
 
             buffer = io.BytesIO()
-            pdf.output(name=buffer, dest='S')
-            buffer.seek(0)
+            pdf_bytes = pdf.output(dest='S').encode('latin1')  # genera bytes compatibili
+            buffer = io.BytesIO(pdf_bytes)
 
+            
             st.download_button(
                 label="📥 Scarica il report in PDF",
                 data=buffer,
