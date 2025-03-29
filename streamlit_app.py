@@ -51,8 +51,8 @@ if uploaded_files:
         st.image(BytesIO(img_bytes), caption=f"📍 Immagine {i+1}", use_container_width=True)
 
 # ————— FORM ————— #
-with st.form("note_form"):
-    note = st.text_area("Località o Note aggiuntive per i report (facoltative)", height=100)
+ with st.form("note_form"):
+#   note = st.text_area("Località o Note aggiuntive per i report (facoltative)", height=100) #
     submitted = st.form_submit_button("✅ Conferma per procedere all'analisi delle foto")
     if submitted:
         st.session_state["note"] = note
