@@ -81,7 +81,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                                     "type": "text",
                                     "text": (
                                     " Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
-                                    "Non devi identificare le persone, ma puoi valutarne l'equipaggiamento e il comportamento. "
+                                    "Non devi identificare individui o persone, ma devi solo valutarne l'equipaggiamento e il comportamento. "
                                     "Verifica nel dettaglio se:\n"
                                     "- vengono indossati correttamente i dispositivi di protezione individuale (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
                                     "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
