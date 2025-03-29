@@ -111,38 +111,85 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             )
 
             # Generazione PDF
-            pdf = FPDF()
-            pdf.set_auto_page_break(auto=True, margin=15)
-            pdf.set_font("Arial", size=12)
+            from datetime import datetime
 
-            for img_bytes, img_label, report in report_texts:
-                pdf.add_page()
-                pdf.multi_cell(0, 10, f"Report - {img_label}\n\n")
-                pdf.multi_cell(0, 10, sanitize_text(report))
+pdf = FPDF(orientation='P', unit='mm', format='A4')
+pdf.set_auto_page_break(auto=True, margin=15)
+pdf.set_font("Helvetica", size=11)
 
-                img = Image.open(BytesIO(img_bytes))
-                img_path = f"/tmp/temp_{img_label}.jpg"
-                img.save(img_path)
-                pdf.image(img_path, x=10, w=180)
-                os.remove(img_path)  # Pulizia immagine temporanea
+# Header
+def add_header():
+    pdf.set_font("Helvetica", style='B', size=13)
+    pdf.cell(0, 10, "Report SicurANCE Piemonte e Valle d’Aosta", ln=True, align="C")
+    pdf.set_font("Helvetica", style='', size=11)
+    pdf.cell(0, 10, "Analisi della sicurezza nei cantieri – ai sensi del D.Lgs. 81/2008", ln=True, align="C")
+    pdf.ln(5)
 
-            if note:
-                pdf.add_page()
-                pdf.multi_cell(0, 10, "Note aggiuntive:\n" + sanitize_text(note) + "\n")
+# Corpo report per ogni immagine
+for idx, (img_bytes, img_label, report) in enumerate(report_texts):
+    pdf.add_page()
+    add_header()
 
-            pdf.multi_cell(0, 10, "\n" + sanitize_text(disclaimer))
+    # Inserimento immagine standardizzata
+    img = Image.open(BytesIO(img_bytes)).convert("RGB")
+    img_path = f"/tmp/temp_{img_label}.jpg"
+    img.save(img_path)
+    pdf.image(img_path, x=15, y=40, w=180, h=110)  # standard: 180x110 mm
+    os.remove(img_path)
 
-            pdf_output = BytesIO()
-            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
-            pdf_output.write(pdf_bytes)
-            pdf_output.seek(0)
+    pdf.ln(120)  # spazio dopo immagine
+    pdf.set_font("Helvetica", style='B', size=12)
+    pdf.cell(0, 10, f"{img_label} – Risultato dell’analisi:", ln=True)
 
-            st.download_button(
-                label="📄 Scarica il report in PDF",
-                data=pdf_output,
-                file_name="report_sicurANCE.pdf",
-                mime="application/pdf"
-            )
+    pdf.set_font("Helvetica", size=11)
+    pdf.multi_cell(0, 8, sanitize_text(report))
+
+# Note aggiuntive (se presenti)
+if note:
+    pdf.add_page()
+    add_header()
+    pdf.set_font("Helvetica", style='B', size=12)
+    pdf.cell(0, 10, "Note aggiuntive:", ln=True)
+    pdf.set_font("Helvetica", size=11)
+    pdf.multi_cell(0, 8, sanitize_text(note))
+
+# Pagina finale: Disclaimer + firma
+pdf.add_page()
+add_header()
+pdf.set_font("Helvetica", style='B', size=12)
+pdf.cell(0, 10, "Disclaimer sull’utilizzo dell’applicativo:", ln=True)
+pdf.set_font("Helvetica", size=10)
+pdf.multi_cell(0, 8, sanitize_text(
+    "L’app SicurANCE Piemonte e Valle d’Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
+    "Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge. "
+    "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
+))
+
+# Footer finale con data e pagina
+def add_footer():
+    pdf.set_y(-15)
+    pdf.set_font("Helvetica", size=8)
+    pdf.set_text_color(128)
+    pdf.cell(0, 10, f"Generato il {datetime.today().strftime('%d/%m/%Y')} – Pagina {pdf.page_no()}", align='C')
+
+# Applichiamo footer a tutte le pagine
+for i in range(1, pdf.page_no() + 1):
+    pdf.page = i
+    add_footer()
+
+# Output PDF
+pdf_output = BytesIO()
+pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+pdf_output.write(pdf_bytes)
+pdf_output.seek(0)
+
+st.download_button(
+    label="📄 Scarica il report in PDF",
+    data=pdf_output,
+    file_name="report.pdf",
+    mime="application/pdf"
+)
+
 
             # Reset
             st.session_state["analyze"] = False
