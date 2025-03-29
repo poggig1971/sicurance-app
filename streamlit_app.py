@@ -10,15 +10,14 @@ from datetime import datetime
 
 def sanitize_text(text):
     text = text.replace("’", "'").replace("–", "-").replace("“", '"').replace("”", '"')
-    text = re.sub(r'[\u2018\u2019\u201C\u201D]', '', text)  # rimuove virgolette e apostrofi tipografici
-    text = text.encode('latin-1', 'ignore').decode('latin-1')  # elimina tutto ciò che non è latin-1 compatibile
+    text = re.sub(r'[\u2018\u2019\u201C\u201D]', '', text)
+    text = text.encode('latin-1', 'ignore').decode('latin-1')
     return text
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="TEST SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
-# Header
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("logo_ance.jpg", width=220)
@@ -28,7 +27,6 @@ with col2:
         <h4 style='margin-top: 0;'>Analisi AI della sicurezza nei cantieri</h4>
     """, unsafe_allow_html=True)
 
-# Upload immagini
 uploaded_files = st.file_uploader(
     "📷 Carica una o più foto del cantiere (max 5)", 
     type=["jpg", "jpeg", "png"], 
@@ -41,7 +39,6 @@ if uploaded_files:
     for i, img_bytes in enumerate(st.session_state["uploaded_images"]):
         st.image(BytesIO(img_bytes), caption=f"📍 Immagine {i+1}", use_container_width=True)
 
-# Form per le note
 with st.form("note_form"):
     note = st.text_area("Località o Note aggiuntive per i report (facoltative)", placeholder="Scrivi qui eventuali note...", height=100)
     submitted = st.form_submit_button("✅ Conferma per procedere all'analisi delle foto")
@@ -49,15 +46,12 @@ with st.form("note_form"):
         st.session_state["note"] = note
         st.session_state["analyze"] = True
 
-# Analisi immagini
 if st.session_state.get("analyze") and st.session_state.get("image_ready"):
     with st.spinner("🧠 Analisi in corso..."):
         report_texts = []
-
         try:
             for i, image_bytes in enumerate(st.session_state["uploaded_images"]):
                 base64_image = base64.b64encode(image_bytes).decode("utf-8")
-
                 response = client.chat.completions.create(
                     model="gpt-4o",
                     messages=[
@@ -96,7 +90,6 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     max_tokens=1000,
                     temperature=0.2
                 )
-
                 report = response.choices[0].message.content
                 report_texts.append((image_bytes, f"Immagine {i+1}", report))
 
@@ -127,33 +120,35 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             for idx, (img_bytes, img_label, report) in enumerate(report_texts):
                 pdf.add_page()
                 add_header()
-
+                cleaned_label = sanitize_text(img_label)
+                cleaned_report = sanitize_text(report)
                 img = Image.open(BytesIO(img_bytes)).convert("RGB")
-                img_path = f"/tmp/temp_{img_label}.jpg"
+                img_path = f"/tmp/temp_{cleaned_label.replace(' ', '_')}.jpg"
                 img.save(img_path)
                 pdf.image(img_path, x=15, y=40, w=180, h=110)
                 os.remove(img_path)
-
                 pdf.ln(120)
                 pdf.set_font("Helvetica", style='B', size=12)
-                pdf.cell(0, 10, f"{img_label} - Risultato dell'analisi:", ln=True)
+                pdf.cell(0, 10, f"{cleaned_label} - Risultato dell'analisi:", ln=True)
                 pdf.set_font("Helvetica", size=11)
-                pdf.multi_cell(0, 6, sanitize_text(report))
+                pdf.multi_cell(0, 6, cleaned_report)
 
             if note:
                 pdf.add_page()
                 add_header()
+                cleaned_note = sanitize_text(note)
                 pdf.set_font("Helvetica", style='B', size=12)
                 pdf.cell(0, 10, "Note aggiuntive:", ln=True)
                 pdf.set_font("Helvetica", size=11)
-                pdf.multi_cell(0, 6, sanitize_text(note))
+                pdf.multi_cell(0, 6, cleaned_note)
 
             pdf.add_page()
             add_header()
+            cleaned_disclaimer = sanitize_text(disclaimer)
             pdf.set_font("Helvetica", style='B', size=12)
             pdf.cell(0, 10, "Disclaimer sull'utilizzo dell'applicativo:", ln=True)
             pdf.set_font("Helvetica", size=10)
-            pdf.multi_cell(0, 6, sanitize_text(disclaimer))
+            pdf.multi_cell(0, 6, cleaned_disclaimer)
 
             def add_footer():
                 pdf.set_y(-15)
@@ -166,7 +161,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 add_footer()
 
             pdf_output = BytesIO()
-            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'ignore')  # sostituito 'replace' con 'ignore'
+            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'ignore')
             pdf_output.write(pdf_bytes)
             pdf_output.seek(0)
 
@@ -183,7 +178,6 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             st.error("❌ Errore durante la generazione del report.")
             st.exception(e)
 
-# Disclaimer fisso
 with st.expander("ℹ️ Avvertenza sull’utilizzo dell’app", expanded=True):
     st.markdown("""
         <div style='font-size: 14px; line-height: 1.5; color: gray;'>
