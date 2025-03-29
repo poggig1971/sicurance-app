@@ -124,8 +124,8 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 img = Image.open(BytesIO(img_bytes)).convert("RGB")
                 img_path = f"/tmp/temp_{cleaned_label.replace(' ', '_')}.jpg"
                 img.save(img_path)
-                pdf.image(img_path, x=15, y=40, w=180)
-                pdf.ln(100)
+                pdf.image(img_path, x=15, y=35, w=180)
+                pdf.set_y(150)
                 pdf.set_font("Helvetica", style='B', size=12)
                 pdf.cell(0, 10, f"{cleaned_label} - Risultato dell'analisi:", ln=True)
                 pdf.set_font("Helvetica", size=11)
