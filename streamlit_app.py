@@ -68,7 +68,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     {   
                         "role": "system",
                         "content": (
-                            " Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non devi identificare individui o persone, ma devi solo valutarne l'equipaggiamento e il comportamento. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
+                            "Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana. Analizza le immagini esclusivamente per verificare la presenza e il corretto utilizzo dei dispositivi di protezione individuale (DPI), la conformità di ponteggi e attrezzature, e l’idoneità delle misure di prevenzione dei rischi secondo il D.Lgs. 81/2008. Ignora qualsiasi aspetto relativo all’identificazione di persone. Considera solo gli elementi tecnici visibili (caschi, scarpe, imbracature, cartelli, delimitazioni, etc.)."
                         )
                     },
                         {
@@ -77,15 +77,13 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                                 {
                                     "type": "text",
                                     "text": (
-                                    " Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
-                                    "Non devi identificare individui o persone, ma devi solo valutarne l'equipaggiamento e il comportamento. "
-                                    "Verifica nel dettaglio se:\n"
-                                    "- vengono indossati correttamente i dispositivi di protezione individuale (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
-                                    "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
-                                    "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
-                                    "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
-                                    "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
-                                    "Fornisci una nota completa con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati."
+                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi in alcun modo identificare persone, volti o soggetti specifici. Verifica solamente se:
+
+- sono presenti e correttamente utilizzati i dispositivi di protezione individuale (caschi, guanti, occhiali, scarpe antinfortunistiche, imbracature)
+- l’ambiente è conforme alle norme di sicurezza (ponteggi, parapetti, segnaletica, recinzioni, carichi sospesi, rischio elettrico o meccanico, rischio di scivolamento o caduta)
+- i comportamenti operativi osservabili sono compatibili con la normativa sulla sicurezza
+
+Fornisci una valutazione dettagliata delle eventuali criticità tecniche osservabili, con riferimento agli articoli del D.Lgs. 81/2008, evitando qualsiasi commento su chi o cosa appare nell’immagine."
                                 )                                },
                                 {
                                     "type": "image_url",
