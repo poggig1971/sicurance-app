@@ -37,18 +37,56 @@ with col2:
         <h4 style='margin-top: 0;'>Analisi AI della sicurezza nei cantieri</h4>
     """, unsafe_allow_html=True)
 
-# ————— FILE UPLOAD ————— #
+from PIL import ImageOps
+
+MAX_FILE_SIZE_MB = 5
+MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
+MAX_IMAGES = 5
+MAX_WIDTH = 1200  # max pixel di larghezza
+
 uploaded_files = st.file_uploader(
-    "📷 Carica una o più foto del cantiere (max 5) Le immagini caricate non vengono archiviate né associate a metadati personali. L’intero processo di analisi avviene esclusivamente in sessione, nel rispetto delle best practice del Regolamento Generale sulla Protezione dei Dati (GDPR), garantendo la tutela della privacy degli utenti e dei soggetti eventualmente presenti.",
+    f"📷 Carica fino a {MAX_IMAGES} foto del cantiere (max {MAX_FILE_SIZE_MB} MB e {MAX_WIDTH}px per immagine)",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True
 )
 
 if uploaded_files:
-    st.session_state["uploaded_images"] = [file.read() for file in uploaded_files]
-    st.session_state["image_ready"] = True
-    for i, img_bytes in enumerate(st.session_state["uploaded_images"]):
-        st.image(BytesIO(img_bytes), caption=f"📍 Immagine {i+1}", use_container_width=True)
+    if len(uploaded_files) > MAX_IMAGES:
+        st.warning(f"⚠️ Hai caricato più di {MAX_IMAGES} immagini. Solo le prime {MAX_IMAGES} verranno analizzate.")
+        uploaded_files = uploaded_files[:MAX_IMAGES]
+
+    valid_images = []
+    for file in uploaded_files:
+        if file.size > MAX_FILE_SIZE:
+            st.warning(f"⚠️ Il file '{file.name}' supera il limite di {MAX_FILE_SIZE_MB} MB e verrà ignorato.")
+            continue
+
+        try:
+            image = Image.open(file)
+            if image.width > MAX_WIDTH:
+                # Ridimensiona mantenendo le proporzioni
+                ratio = MAX_WIDTH / image.width
+                new_size = (MAX_WIDTH, int(image.height * ratio))
+                image = image.resize(new_size)
+                st.info(f"ℹ️ L'immagine '{file.name}' è stata ridimensionata a {new_size[0]}x{new_size[1]} pixel.")
+
+            buffered = BytesIO()
+            image = ImageOps.exif_transpose(image)  # correzione rotazione
+            image.save(buffered, format="JPEG", quality=85)
+            img_bytes = buffered.getvalue()
+            size_mb = round(len(img_bytes) / 1024 / 1024, 2)
+
+            st.image(BytesIO(img_bytes), caption=f"{file.name} ({size_mb} MB)", use_container_width=True)
+            valid_images.append(img_bytes)
+        except Exception as e:
+            st.error(f"❌ Errore nel processamento di '{file.name}': {e}")
+
+    if valid_images:
+        st.session_state["uploaded_images"] = valid_images
+        st.session_state["image_ready"] = True
+    else:
+        st.session_state["image_ready"] = False
+        st.error("❌ Nessuna immagine valida caricata. Controlla dimensioni e formato.")
 
 # ————— PULSANTE SEMPLICE ————— #
 if st.button("✅ Avvia l'analisi delle foto"):
