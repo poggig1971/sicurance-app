@@ -170,13 +170,13 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 pdf.multi_cell(0, 6, cleaned_report)
                 current_y += text_report_height + 10
 
-            if note:
-                pdf.add_page()
-                add_header()
-                pdf.set_font("Helvetica", style='B', size=12)
-                pdf.cell(0, 10, "Note aggiuntive:", ln=True)
-                pdf.set_font("Helvetica", size=11)
-                pdf.multi_cell(0, 6, sanitize_text(note))
+           # if note:
+           #     pdf.add_page()
+           #     add_header()
+           #     pdf.set_font("Helvetica", style='B', size=12)
+           #     pdf.cell(0, 10, "Note aggiuntive:", ln=True)
+           #     pdf.set_font("Helvetica", size=11)
+        #    pdf.multi_cell(0, 6, sanitize_text(note))
 
             disclaimer = (
                 "L'app SicurANCE Piemonte e Valle d'Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
