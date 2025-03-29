@@ -77,13 +77,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                                 {
                                     "type": "text",
                                     "text": (
-                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi in alcun modo identificare persone, volti o soggetti specifici. Verifica solamente se:
-
-- sono presenti e correttamente utilizzati i dispositivi di protezione individuale (caschi, guanti, occhiali, scarpe antinfortunistiche, imbracature)
-- l’ambiente è conforme alle norme di sicurezza (ponteggi, parapetti, segnaletica, recinzioni, carichi sospesi, rischio elettrico o meccanico, rischio di scivolamento o caduta)
-- i comportamenti operativi osservabili sono compatibili con la normativa sulla sicurezza
-
-Fornisci una valutazione dettagliata delle eventuali criticità tecniche osservabili, con riferimento agli articoli del D.Lgs. 81/2008, evitando qualsiasi commento su chi o cosa appare nell’immagine."
+                                    "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi in alcun modo identificare persone, volti o soggetti specifici. Verifica solamente se:- sono presenti e correttamente utilizzati i dispositivi di protezione individuale (caschi, guanti, occhiali, scarpe antinfortunistiche, imbracature) - l’ambiente è conforme alle norme di sicurezza (ponteggi, parapetti, segnaletica, recinzioni, carichi sospesi, rischio elettrico o meccanico, rischio di scivolamento o caduta) - i comportamenti operativi osservabili sono compatibili con la normativa sulla sicurezza Fornisci una valutazione dettagliata delle eventuali criticità tecniche osservabili, con riferimento agli articoli del D.Lgs. 81/2008, evitando qualsiasi commento su chi o cosa appare nell’immagine."
                                 )                                },
                                 {
                                     "type": "image_url",
