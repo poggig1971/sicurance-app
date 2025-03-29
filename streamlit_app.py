@@ -9,13 +9,9 @@ import os
 from datetime import datetime
 
 def sanitize_text(text):
-    return (
-        text
-        .replace("’", "'")
-        .replace("–", "-")
-        .replace("“", '"')
-        .replace("”", '"')
-    )
+    text = text.replace("’", "'").replace("–", "-").replace("“", '"').replace("”", '"')
+    text = re.sub(r'[^\x00-\xFF]', '', text)  # rimuove caratteri non compatibili con latin-1
+    return text
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
