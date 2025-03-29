@@ -10,7 +10,8 @@ from datetime import datetime
 
 def sanitize_text(text):
     text = text.replace("’", "'").replace("–", "-").replace("“", '"').replace("”", '"')
-    text = re.sub(r'[^\x00-\xFF]', '', text)  # rimuove caratteri non compatibili con latin-1
+    text = re.sub(r'[\u2018\u2019\u201C\u201D]', '', text)  # rimuove virgolette e apostrofi tipografici
+    text = text.encode('latin-1', 'ignore').decode('latin-1')  # elimina tutto ciò che non è latin-1 compatibile
     return text
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -165,7 +166,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 add_footer()
 
             pdf_output = BytesIO()
-            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'ignore')  # sostituito 'replace' con 'ignore'
             pdf_output.write(pdf_bytes)
             pdf_output.seek(0)
 
