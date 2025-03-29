@@ -81,15 +81,29 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                                 {
                                     "type": "text",
                                     "text": (
-                                        "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
-                                        "Non devi identificare le persone, ma puoi valutarne l'equipaggiamento e il comportamento. "
-                                        "Verifica nel dettaglio se:\n"
-                                        "- vengono indossati correttamente i DPI\n"
-                                        "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
-                                        "- i ponteggi o trabattelli rispettano i requisiti\n"
-                                        "- vi siano segnaletiche, recinzioni o delimitazioni\n"
-                                        "- l’ambiente presenta rischi evidenti\n\n"
-                                        "Fornisci una nota completa e, ove possibile, i riferimenti normativi violati."
+                                        "Sei un esperto di sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008.\n\n"
+                                        "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. Non devi identificare le persone, ma puoi valutarne l'equipaggiamento e il comportamento.\n\n"
+                                        "Verifica nel dettaglio i seguenti aspetti, indicando chiaramente se sono rispettati o meno, e fornendo il riferimento normativo specifico del D.Lgs. 81/2008:\n\n"
+                                        "- **Dispositivi di Protezione Individuale (DPI):**\n"
+                                        "    - Elmetto: è presente? È indossato correttamente (allacciato, della taglia giusta)? (Riferimento normativo: Art. 75-77)\n"
+                                        "    - Imbracatura: è presente? È indossata e allacciata correttamente? (Riferimento normativo: Art. 115-116)\n"
+                                        "    - Scarpe antinfortunistiche: sono presenti e indossate? (Riferimento normativo: Art. 75-77)\n"
+                                        "    - Guanti: sono presenti e indossati? (Riferimento normativo: Art. 75-77)\n"
+                                        "    - Occhiali protettivi: sono presenti e indossati, se necessario? (Riferimento normativo: Art. 75-77)\n"
+                                        "- **Lavori in quota:**\n"
+                                        "    - Sono presenti sistemi di protezione contro le cadute (parapetti, linee vita)? (Riferimento normativo: Art. 115-116)\n"
+                                        "    - I lavoratori utilizzano correttamente i sistemi di protezione? (Riferimento normativo: Art. 115-116)\n"
+                                        "- **Ponteggi e trabattelli:**\n"
+                                        "    - Sono montati correttamente? Sono stabili? Sono presenti parapetti? (Riferimento normativo: Allegato XVIII)\n"
+                                        "    - Sono presenti tavole del ponteggio integre? (Riferimento normativo: Allegato XVIII)\n"
+                                        "- **Segnaletica e delimitazioni:**\n"
+                                        "    - È presente segnaletica di sicurezza per indicare pericoli o obblighi? (Riferimento normativo: Titolo V)\n"
+                                        "    - Le aree pericolose sono delimitate per impedire l'accesso non autorizzato? (Riferimento normativo: Titolo V)\n"
+                                        "- **Rischi ambientali:**\n"
+                                        "    - Sono presenti rischi di caduta o inciampo (materiali disordinati, pavimenti scivolosi)?\n"
+                                        "    - Sono presenti rischi elettrici (cavi scoperti, quadri elettrici accessibili)?\n"
+                                        "    - Sono presenti rischi di caduta dall'alto di materiali?\n\n"
+                                        "Fornisci una nota completa e dettagliata, indicando per ogni criticità riscontrata il riferimento normativo specifico del D.Lgs. 81/2008."
                                     )
                                 },
                                 {
