@@ -6,6 +6,7 @@ from io import BytesIO
 from PIL import Image
 import re
 import os
+from datetime import datetime
 
 def sanitize_text(text):
     return re.sub(r'[^\x00-\x7F]+', '', text)
@@ -60,7 +61,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                         {
                             "role": "system",
                             "content": (
-                                 " Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
+                                " Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008."
                             )
                         },
                         {
@@ -102,7 +103,6 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 st.subheader(label)
                 st.write(report)
 
-            # Disclaimer
             disclaimer = (
                 "Avvertenza sull’utilizzo dell’app\n\n"
                 "L'app SicurANCE Piemonte e Valle d'Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
@@ -110,88 +110,70 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
             )
 
-            # Generazione PDF
-            from datetime import datetime
+            pdf = FPDF(orientation='P', unit='mm', format='A4')
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.set_font("Helvetica", size=11)
 
-pdf = FPDF(orientation='P', unit='mm', format='A4')
-pdf.set_auto_page_break(auto=True, margin=15)
-pdf.set_font("Helvetica", size=11)
+            def add_header():
+                pdf.set_font("Helvetica", style='B', size=13)
+                pdf.cell(0, 10, "Report SicurANCE Piemonte e Valle d’Aosta", ln=True, align="C")
+                pdf.set_font("Helvetica", style='', size=11)
+                pdf.cell(0, 10, "Analisi della sicurezza nei cantieri – ai sensi del D.Lgs. 81/2008", ln=True, align="C")
+                pdf.ln(5)
 
-# Header
-def add_header():
-    pdf.set_font("Helvetica", style='B', size=13)
-    pdf.cell(0, 10, "Report SicurANCE Piemonte e Valle d’Aosta", ln=True, align="C")
-    pdf.set_font("Helvetica", style='', size=11)
-    pdf.cell(0, 10, "Analisi della sicurezza nei cantieri – ai sensi del D.Lgs. 81/2008", ln=True, align="C")
-    pdf.ln(5)
+            for idx, (img_bytes, img_label, report) in enumerate(report_texts):
+                pdf.add_page()
+                add_header()
 
-# Corpo report per ogni immagine
-for idx, (img_bytes, img_label, report) in enumerate(report_texts):
-    pdf.add_page()
-    add_header()
+                img = Image.open(BytesIO(img_bytes)).convert("RGB")
+                img_path = f"/tmp/temp_{img_label}.jpg"
+                img.save(img_path)
+                pdf.image(img_path, x=15, y=40, w=180, h=110)
+                os.remove(img_path)
 
-    # Inserimento immagine standardizzata
-    img = Image.open(BytesIO(img_bytes)).convert("RGB")
-    img_path = f"/tmp/temp_{img_label}.jpg"
-    img.save(img_path)
-    pdf.image(img_path, x=15, y=40, w=180, h=110)  # standard: 180x110 mm
-    os.remove(img_path)
+                pdf.ln(120)
+                pdf.set_font("Helvetica", style='B', size=12)
+                pdf.cell(0, 10, f"{img_label} – Risultato dell’analisi:", ln=True)
+                pdf.set_font("Helvetica", size=11)
+                pdf.multi_cell(0, 6, sanitize_text(report))
 
-    pdf.ln(120)  # spazio dopo immagine
-    pdf.set_font("Helvetica", style='B', size=12)
-    pdf.cell(0, 10, f"{img_label} – Risultato dell’analisi:", ln=True)
+            if note:
+                pdf.add_page()
+                add_header()
+                pdf.set_font("Helvetica", style='B', size=12)
+                pdf.cell(0, 10, "Note aggiuntive:", ln=True)
+                pdf.set_font("Helvetica", size=11)
+                pdf.multi_cell(0, 6, sanitize_text(note))
 
-    pdf.set_font("Helvetica", size=11)
-    pdf.multi_cell(0, 8, sanitize_text(report))
+            pdf.add_page()
+            add_header()
+            pdf.set_font("Helvetica", style='B', size=12)
+            pdf.cell(0, 10, "Disclaimer sull’utilizzo dell’applicativo:", ln=True)
+            pdf.set_font("Helvetica", size=10)
+            pdf.multi_cell(0, 6, sanitize_text(disclaimer))
 
-# Note aggiuntive (se presenti)
-if note:
-    pdf.add_page()
-    add_header()
-    pdf.set_font("Helvetica", style='B', size=12)
-    pdf.cell(0, 10, "Note aggiuntive:", ln=True)
-    pdf.set_font("Helvetica", size=11)
-    pdf.multi_cell(0, 8, sanitize_text(note))
+            def add_footer():
+                pdf.set_y(-15)
+                pdf.set_font("Helvetica", size=8)
+                pdf.set_text_color(128)
+                pdf.cell(0, 10, f"Generato il {datetime.today().strftime('%d/%m/%Y')} – Pagina {pdf.page_no()}", align='C')
 
-# Pagina finale: Disclaimer + firma
-pdf.add_page()
-add_header()
-pdf.set_font("Helvetica", style='B', size=12)
-pdf.cell(0, 10, "Disclaimer sull’utilizzo dell’applicativo:", ln=True)
-pdf.set_font("Helvetica", size=10)
-pdf.multi_cell(0, 8, sanitize_text(
-    "L’app SicurANCE Piemonte e Valle d’Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
-    "Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge. "
-    "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
-))
+            for i in range(1, pdf.page_no() + 1):
+                pdf.page = i
+                add_footer()
 
-# Footer finale con data e pagina
-def add_footer():
-    pdf.set_y(-15)
-    pdf.set_font("Helvetica", size=8)
-    pdf.set_text_color(128)
-    pdf.cell(0, 10, f"Generato il {datetime.today().strftime('%d/%m/%Y')} – Pagina {pdf.page_no()}", align='C')
+            pdf_output = BytesIO()
+            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+            pdf_output.write(pdf_bytes)
+            pdf_output.seek(0)
 
-# Applichiamo footer a tutte le pagine
-for i in range(1, pdf.page_no() + 1):
-    pdf.page = i
-    add_footer()
+            st.download_button(
+                label="📄 Scarica il report in PDF",
+                data=pdf_output,
+                file_name="report.pdf",
+                mime="application/pdf"
+            )
 
-# Output PDF
-pdf_output = BytesIO()
-pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
-pdf_output.write(pdf_bytes)
-pdf_output.seek(0)
-
-st.download_button(
-    label="📄 Scarica il report in PDF",
-    data=pdf_output,
-    file_name="report.pdf",
-    mime="application/pdf"
-)
-
-
-            # Reset
             st.session_state["analyze"] = False
 
         except Exception as e:
