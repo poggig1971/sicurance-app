@@ -39,7 +39,7 @@ with col2:
 
 # ————— FILE UPLOAD ————— #
 uploaded_files = st.file_uploader(
-    "📷 Carica una o più foto del cantiere (max 5)",
+    "📷 Carica una o più foto del cantiere (max 5) Le immagini caricate non vengono archiviate né associate a metadati personali. L’intero processo di analisi avviene esclusivamente in sessione, nel rispetto delle best practice del Regolamento Generale sulla Protezione dei Dati (GDPR), garantendo la tutela della privacy degli utenti e dei soggetti eventualmente presenti.",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True
 )
