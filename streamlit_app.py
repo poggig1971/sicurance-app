@@ -26,14 +26,14 @@ def get_multicell_height(pdf, text, w):
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # ————— UI SETUP ————— #
-st.set_page_config(page_title="TEST SicurANCE Piemonte e Valle d'Aosta", layout="centered")
+st.set_page_config(page_title="TESTING WebApp SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("logo_ance.jpg", width=220)
 with col2:
     st.markdown("""
-        <h1 style='font-size: 24px; margin-bottom: 5px;'> TEST SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TESTING WebApp SicurANCE Piemonte e Valle d'Aosta</h1>
         <h4 style='margin-top: 0;'>Analisi AI della sicurezza nei cantieri</h4>
     """, unsafe_allow_html=True)
 
@@ -118,9 +118,9 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
 
             def add_header():
                 pdf.set_font("Helvetica", style='B', size=13)
-                pdf.cell(0, 10, sanitize_text("Report SicurANCE Piemonte e Valle d’Aosta"), ln=True, align="C")
+                pdf.cell(0, 10, sanitize_text("Report "), ln=True, align="C")
                 pdf.set_font("Helvetica", style='', size=11)
-                pdf.cell(0, 10, sanitize_text("Analisi della sicurezza nei cantieri - ai sensi del D.Lgs. 81/2008"), ln=True, align="C")
+                pdf.cell(0, 10, sanitize_text("Analisi Automatica della sicurezza nei cantieri"), ln=True, align="C")
                 pdf.ln(5)
 
             def add_footer():
@@ -152,7 +152,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 current_y += img_h_resized + 5
                 os.remove(img_path)
 
-                pdf.set_font("Helvetica", style='B', size=12)
+                pdf.set_font("Helvetica", style='B', size=11)
                 label_text = f"{cleaned_label} - Risultato dell'analisi:"
                 text_label_height = get_multicell_height(pdf, label_text, pdf.w - 30)
                 if current_y + text_label_height > pdf.h - 30:
@@ -163,7 +163,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 pdf.multi_cell(0, 6, label_text)
                 current_y += text_label_height
 
-                pdf.set_font("Helvetica", size=11)
+                pdf.set_font("Helvetica", size=10)
                 text_report_height = get_multicell_height(pdf, cleaned_report, pdf.w - 30)
                 if current_y + text_report_height > pdf.h - 30:
                     pdf.add_page()
