@@ -11,8 +11,7 @@ from datetime import datetime
 def sanitize_text(text):
     text = text.replace("’", "'").replace("–", "-").replace("“", '"').replace("”", '"')
     text = re.sub(r'[\u2018\u2019\u201C\u201D]', '', text)
-    text = text.encode('latin-1', 'ignore').decode('latin-1')
-    return text
+    return text.encode('latin-1', 'ignore').decode('latin-1')
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -112,9 +111,9 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
 
             def add_header():
                 pdf.set_font("Helvetica", style='B', size=13)
-                pdf.cell(0, 10, "Report SicurANCE Piemonte e Valle d’Aosta", ln=True, align="C")
+                pdf.cell(0, 10, sanitize_text("Report SicurANCE Piemonte e Valle d’Aosta"), ln=True, align="C")
                 pdf.set_font("Helvetica", style='', size=11)
-                pdf.cell(0, 10, "Analisi della sicurezza nei cantieri - ai sensi del D.Lgs. 81/2008", ln=True, align="C")
+                pdf.cell(0, 10, sanitize_text("Analisi della sicurezza nei cantieri - ai sensi del D.Lgs. 81/2008"), ln=True, align="C")
                 pdf.ln(5)
 
             for idx, (img_bytes, img_label, report) in enumerate(report_texts):
@@ -154,7 +153,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 pdf.set_y(-15)
                 pdf.set_font("Helvetica", size=8)
                 pdf.set_text_color(128)
-                pdf.cell(0, 10, f"Generato il {datetime.today().strftime('%d/%m/%Y')} - Pagina {pdf.page_no()}", align='C')
+                pdf.cell(0, 10, sanitize_text(f"Generato il {datetime.today().strftime('%d/%m/%Y')} - Pagina {pdf.page_no()}"), align='C')
 
             for i in range(1, pdf.page_no() + 1):
                 pdf.page = i
