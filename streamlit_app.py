@@ -237,7 +237,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
            #     pdf.set_font("Helvetica", size=11)
         #    pdf.multi_cell(0, 6, sanitize_text(note))
 
-# ——— INDICE DELLE CRITICITÀ ——— #
+# ——— INDICE DELLE CRITICITÀ CON SEMAFORO ——— #
 pdf.add_page()
 add_header()
 pdf.set_font("Helvetica", style='B', size=12)
@@ -245,8 +245,9 @@ pdf.cell(0, 10, "Indice delle criticità rilevate per immagine:", ln=True)
 pdf.ln(5)
 pdf.set_font("Helvetica", size=10)
 for _, label, _, criticita in report_texts:
-    pdf.cell(0, 8, f"{sanitize_text(label)}: {criticita} criticità rilevate", ln=True)
-
+    bollino = semaforo_criticita(criticita)
+    testo = f"{bollino} {sanitize_text(label)}: {criticita} criticità rilevate"
+    pdf.cell(0, 8, testo, ln=True)
             
             disclaimer = (
                 "L'app SicurANCE Piemonte e Valle d'Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
