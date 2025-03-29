@@ -68,7 +68,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     {   
                         "role": "system",
                         "content": (
-                            "Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana. Analizza le immagini esclusivamente per verificare la presenza e il corretto utilizzo dei dispositivi di protezione individuale (DPI), la conformità di ponteggi e attrezzature, e l’idoneità delle misure di prevenzione dei rischi secondo il D.Lgs. 81/2008. Ignora qualsiasi aspetto relativo all’identificazione di persone. Considera solo gli elementi tecnici visibili (caschi, scarpe, imbracature, cartelli, delimitazioni, etc.)."
+                            "Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana. Analizza le immagini esclusivamente per verificare la presenza e il corretto utilizzo dei dispositivi di protezione individuale (DPI), la conformità di ponteggi e attrezzature, e l’idoneità delle misure di prevenzione dei rischi secondo il D.Lgs. 81/2008. Ignora qualsiasi aspetto relativo all’identificazione di persone. Considera solo gli elementi tecnici visibili (caschi, scarpe, imbracature, cartelli, delimitazioni, etc.). Genera una valutazione dettagliata, suddivisa in paragrafi con titoli chiari. Usa uno stile tecnico ma leggibile, come se fosse un verbale di sopralluogo."
                         )
                     },
                         {
