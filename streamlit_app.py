@@ -22,6 +22,32 @@ def get_multicell_height(pdf, text, w):
     temp_pdf.multi_cell(w, 6, text)
     return temp_pdf.get_y() - start_y
 
+def evidenzia_criticita(report_text):
+    """
+    Aggiunge un simbolo rosso (🔴) davanti alle frasi che indicano una criticità nel testo.
+    """
+    patterns = [
+        r"(Criticità rilevata:)",
+        r"(Rischio di )",
+        r"(Non è presente )",
+        r"(Assenza di )",
+        r"(Mancanza di )",
+        r"(Utilizzo non corretto di )",
+        r"(DPI.*non.*indossato)",
+        r"(Non conforme)",
+        r"(Inadempienza)",
+        r"(Pericolo di )",
+    ]
+    for pattern in patterns:
+        report_text = re.sub(pattern, r"🔴 \1", report_text, flags=re.IGNORECASE)
+    return report_text
+
+def conta_criticita(report_text):
+    """
+    Conta quante criticità sono state evidenziate nel testo con il simbolo 🔴.
+    """
+    return report_text.count("🔴")
+
 # ————— OPENAI CLIENT ————— #
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -130,7 +156,10 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     temperature=0.2
                 )
                 report = response.choices[0].message.content
-                report_texts.append((image_bytes, f"Immagine {i+1}", report))
+                report = evidenzia_criticita(report)
+                criticita_count = conta_criticita(report)
+                report_texts.append((image_bytes, f"Immagine {i+1}", report, criticita_count))
+                
 
             st.success("✅ Analisi completata")
             st.markdown("### Report:")
