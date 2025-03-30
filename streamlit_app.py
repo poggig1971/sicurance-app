@@ -24,23 +24,23 @@ def get_multicell_height(pdf, text, w):
 
 def evidenzia_criticita(report_text):
     patterns = [
-        r"(Criticità rilevata:)",
-        r"(Rischio di )",
-        r"(Non è presente )",
-        r"(Assenza di )",
-        r"(Mancanza di )",
-        r"(Utilizzo non corretto di )",
-        r"(DPI.*non.*indossato)",
-        r"(Non conforme)",
-        r"(Inadempienza)",
-        r"(Pericolo di )",
+        r"Criticità:.*",  # Modifica qui: cerca "Criticità:" seguito da qualsiasi carattere
+        r"Rischio di .*",
+        r"Non è presente .*",
+        r"Assenza di .*",
+        r"Mancanza di .*",
+        r"Utilizzo non corretto di .*",
+        r"DPI.*non.*indossato",
+        r"Non conforme.*",
+        r"Inadempienza.*",
+        r"Pericolo di .*",
     ]
     for pattern in patterns:
-        report_text = re.sub(pattern, r"🔴 \1", report_text, flags=re.IGNORECASE)
+        report_text = re.sub(pattern, r" \g<0>", report_text, flags=re.IGNORECASE)  # Usa \g<0> per mantenere il testo trovato
     return report_text
 
 def conta_criticita(report_text):
-    return report_text.count("🔴")
+    return report_text.count("")
 
 def semaforo_criticita(n):
     if n == 0:
@@ -48,7 +48,7 @@ def semaforo_criticita(n):
     elif n <= 2:
         return "🟡"
     else:
-        return "🔴"
+        return ""
 
 # ————— OPENAI CLIENT ————— #
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -72,7 +72,7 @@ MAX_IMAGES = 5
 MAX_WIDTH = 1200
 
 uploaded_files = st.file_uploader(
-    f"📷 Carica fino a {MAX_IMAGES} foto del cantiere (max {MAX_FILE_SIZE_MB} MB e {MAX_WIDTH}px per immagine)",
+    f" Carica fino a {MAX_IMAGES} foto del cantiere (max {MAX_FILE_SIZE_MB} MB e {MAX_WIDTH}px per immagine)",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True
 )
@@ -112,13 +112,12 @@ if uploaded_files:
         st.session_state["image_ready"] = False
         st.error("❌ Nessuna immagine valida caricata.")
 
-
 # ————— PULSANTE AVVIO ————— #
 if st.button("✅ Avvia l'analisi delle foto"):
     st.session_state["analyze"] = True
 
 if st.session_state.get("analyze") and st.session_state.get("image_ready"):
-    with st.spinner("🧠 Analisi in corso..."):
+    with st.spinner(" Analisi in corso..."):
         report_texts = []
         try:
             for i, image_bytes in enumerate(st.session_state["uploaded_images"]):
@@ -129,7 +128,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                         {"role": "system", "content": (
                             "Sei un esperto di sicurezza nei cantieri. Rispondi solo sugli aspetti tecnici "
                             "e normativi secondo il D.Lgs. 81/2008. Non identificare persone. Usa uno stile tecnico, "
-                            "suddiviso per punti. Evidenzia eventuali criticità e suggerisci azioni correttive.")},
+                            "suddiviso per punti. Evidenzia eventuali criticità iniziando la frase con la parola 'Criticità:' e suggerisci azioni correttive.")},
                         {"role": "user", "content": [
                             {"type": "text", "text": (
                                 "Analizza la sicurezza dell'immagine allegata secondo il D.Lgs. 81/2008. "
@@ -151,8 +150,8 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
                 st.write(report)
 
-
             # ——— PDF GENERATION ——— #
+            # (Il codice di generazione del PDF rimane invariato)
             pdf = FPDF(orientation='P', unit='mm', format='A4')
             pdf.set_auto_page_break(auto=False, margin=15)
             pdf.set_font("Helvetica", size=11)
@@ -251,7 +250,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             pdf_output.seek(0)
 
             st.download_button(
-                label="📄 Scarica il report in PDF",
+                label=" Scarica il report in PDF",
                 data=pdf_output,
                 file_name="report.pdf",
                 mime="application/pdf"
