@@ -164,3 +164,13 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
         finally:
             st.session_state["analyze"] = False
 
+# ————— AVVERTENZA ————— #
+with st.expander("ℹ️ Avvertenza sull’utilizzo dell’app", expanded=True):
+    st.markdown("""
+        <div style='font-size: 14px; line-height: 1.5; color: gray;'>
+        <strong>L'app SicurANCE Piemonte e Valle d'Aosta</strong> è uno strumento di supporto all’analisi della sicurezza in cantiere.
+        Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge.
+        Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati.
+        </div>
+    """, unsafe_allow_html=True)
+
