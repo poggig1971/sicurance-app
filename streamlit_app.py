@@ -24,23 +24,25 @@ def get_multicell_height(pdf, text, w):
 
 def evidenzia_criticita(report_text):
     patterns = [
-        r"Criticità:.*",
-        r"Rischio di .*",
-        r"Non è presente .*",
-        r"Assenza di .*",
-        r"Mancanza di .*",
-        r"Utilizzo non corretto di .*",
-        r"DPI.*non.*indossato",
-        r"Non conforme.*",
-        r"Inadempienza.*",
-        r"Pericolo di .*",
+        r"(Criticità:.*)",
+        r"(Rischio di .*)",
+        r"(Non è presente .*)",
+        r"(Assenza di .*)",
+        r"(Mancanza di .*)",
+        r"(Utilizzo non corretto di .*)",
+        r"(DPI.*non.*indossato.*)",
+        r"(Non conforme.*)",
+        r"(Inadempienza.*)",
+        r"(Pericolo di .*)",
     ]
     for pattern in patterns:
-        report_text = re.sub(pattern, r" \g<0>", report_text, flags=re.IGNORECASE)
+        report_text = re.sub(pattern, r"🔴 \1", report_text, flags=re.IGNORECASE)
     return report_text
 
-def conta_criticita(report_text):
-    return len(re.findall(r"(?i)\bCriticità:", report_text))
+def def conta_criticita(report_text):
+    pattern = r"(?i)(Criticità:|Rischio di|Non è presente|Assenza di|Mancanza di|Utilizzo non corretto di|DPI.*non.*indossato|Non conforme|Inadempienza|Pericolo di)"
+    return len(re.findall(pattern, report_text))
+
 
 def semaforo_criticita(n):
     if n == 0:
