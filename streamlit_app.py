@@ -56,7 +56,7 @@ def semaforo_criticita(n):
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # --- UI SETUP --- #
-st.set_page_config(page_title="TESTING WebApp SicurANCE Piemonte e Valle d'Aosta", layout="centered")
+st.set_page_config(page_title="TESTING_WebApp_SicurANCE_Piemonte_Valle_Aosta", layout="centered")
 
 col1, col2 = st.columns([1, 4])
 with col1:
