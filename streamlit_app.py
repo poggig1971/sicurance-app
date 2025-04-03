@@ -56,14 +56,14 @@ def semaforo_criticita(n):
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # --- UI SETUP --- #
-st.set_page_config(page_title="TESTING_WebApp_SicurANCE_Piemonte_Valle_Aosta", layout="centered")
+st.set_page_config(page_title="TESTING_WebApp_SicurANCE_Piemonte_ValleAosta", layout="centered")
 
 col1, col2 = st.columns([1, 4])
 with col1:
     st.image("logo_ance.jpg", width=220)
 with col2:
     st.markdown("""
-        <h1 style='font-size: 24px; margin-bottom: 5px;'> TESTING_WebApp_SicurANCE_Piemonte_Valle_Aosta</h1>
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TESTING_WebApp_SicurANCE_Piemonte:ValleAosta</h1>
         <h4 style='margin-top: 0;'>Analisi AI della sicurezza nei cantieri</h4>
     """, unsafe_allow_html=True)
 
