@@ -63,7 +63,7 @@ with col1:
     st.image("logo_ance.jpg", width=220)
 with col2:
     st.markdown("""
-        <h1 style='font-size: 24px; margin-bottom: 5px;'> TESTING_WebApp_SicurANCE_Piemonte:ValleAosta</h1>
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TESTING_WebApp_SicurANCE_Piemonte_ValleAosta</h1>
         <h4 style='margin-top: 0;'>Analisi AI della sicurezza nei cantieri</h4>
     """, unsafe_allow_html=True)
 
