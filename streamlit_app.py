@@ -40,7 +40,7 @@ def evidenzia_criticita(report_text):
     return report_text
 
 def conta_criticita(report_text):
-    return len(re.findall(r"\bCriticità:\b", report_text, flags=re.IGNORECASE))
+    return len(re.findall(r"(?i)\\bCriticità:", report_text))
 
 def semaforo_criticita(n):
     if n == 0:
