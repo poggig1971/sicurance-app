@@ -141,6 +141,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             "- Dispositivi di protezione individuale (DPI): verifica se sono indossati correttamente (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche, ecc.) e se sono appropriati per l'attività svolta.\n"
             "- Lavori in quota: analizza se le operazioni in quota vengono svolte in sicurezza, con l'utilizzo di imbracature, linee vita o altre misure di protezione adeguate.\n"
             "- Rischio di caduta di materiali o persone: verifica la presenza di protezioni contro la caduta di oggetti e se le aree di lavoro in elevato sono protette.\n"
+            "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
             "- Ponteggi e trabattelli: valuta se sono montati correttamente, se presentano parapetti, tavole fermapiede e se l'accesso è sicuro.\n"
             "- Attrezzature meccaniche (gru, macchine movimento terra, escavatori, ecc.):\n"
             "    - Verifica se le attrezzature appaiono in buone condizioni di manutenzione e se sono presenti le marcature CE.\n"
