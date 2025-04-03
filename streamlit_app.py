@@ -129,40 +129,43 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     messages=[
                         {"role": "system", "content": (
                             " Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008.")},
+
                         {"role": "user", "content": [
-    {"type": "text", "text": "\n".join([
-        "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008.",
-        "Rispondi sempre in lingua italiana.",
-        "Non devi identificare le persone, ma puoi valutarne l'equipaggiamento, l'uso appropriato dell'equipaggiamento e il comportamento.",
-        "",
-        "Verifica nel dettaglio se sono presenti e se vengono rispettate le normative relative a:",
-        "- Dispositivi di protezione individuale (DPI): verifica se sono indossati correttamente (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche, ecc.) e se sono appropriati per l'attività svolta.",
-        "- Lavori in quota: analizza se le operazioni in quota vengono svolte in sicurezza, con l'utilizzo di imbracature, linee vita o altre misure di protezione adeguate.",
-        "- Rischio di caduta di materiali o persone: verifica la presenza di protezioni contro la caduta di oggetti e se le aree di lavoro in elevato sono protette.",
-        "- Ponteggi e trabattelli: valuta se sono montati correttamente, se presentano parapetti, tavole fermapiede e se l'accesso è sicuro.",
-        "- **Attrezzature meccaniche (gru, macchine movimento terra, escavatori, ecc.):**",
-        "    - Verifica se le attrezzature appaiono in buone condizioni di manutenzione e se sono presenti le marcature CE.",
-        "    - Analizza se gli operatori sembrano qualificati e autorizzati all'uso delle specifiche attrezzature.",
-        "    - Osserva se le operazioni di movimentazione vengono eseguite in sicurezza, rispettando le portate massime e le procedure operative.",
-        "    - Valuta la presenza di segnalatori o assistenti di manovra, se necessari.",
-        "    - Verifica la presenza di delimitazioni di sicurezza intorno alle aree operative delle macchine.",
-        "- Movimentazione di carichi (in generale): osserva se le operazioni di sollevamento e movimentazione di carichi vengono eseguite in sicurezza, con attrezzature adeguate e personale formato.",
-        "- Segnaletica di sicurezza: verifica la presenza e l'adeguatezza della segnaletica di sicurezza (divieti, obblighi, avvertimenti, emergenza).",
-        "- Delimitazione e accesso alle aree di lavoro: analizza se le aree pericolose sono adeguatamente delimitate e se l'accesso è controllato.",
-        "- Ordine e pulizia del cantiere: valuta se il cantiere è in ordine, pulito e privo di ostacoli che possano causare inciampi o cadute.",
-        "- Rischi elettrici: verifica la presenza di cavi scoperti, quadri elettrici non protetti o altre situazioni di potenziale rischio elettrico.",
-        "- Rischi da sostanze chimiche: osserva se sono presenti sostanze chimiche pericolose e se sono stoccate e utilizzate in modo sicuro, con la disponibilità di schede di sicurezza e DPI appropriati.",
-        "- Rischi meccanici (in generale): analizza la sicurezza delle attrezzature e dei macchinari utilizzati nel cantiere.",
-        "- Rischio di scivolamento o inciampo: verifica la presenza di pavimenti bagnati, detriti, o altri ostacoli che potrebbero causare scivolamenti o inciampi.",
-        "- Illuminazione: valuta se l'illuminazione del cantiere è adeguata per svolgere le attività in sicurezza.",
-        "- Viabilità interna del cantiere: osserva se la circolazione di persone e mezzi avviene in modo sicuro.",
-        "- Presenza e corretto utilizzo di scale portatili: verifica se le scale portatili sono in buone condizioni e utilizzate correttamente.",
-        "",
-        "Fornisci una nota completa con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati.",
-        "Se non sono visibili elementi specifici relativi a una delle categorie sopra elencate, indica che non sono osservabili nell'immagine."
-    ])),
+    {
+        "type": "text",
+        "text": (
+            "Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
+            "Rispondi sempre in lingua italiana. "
+            "Non devi identificare le persone, ma puoi valutarne l'equipaggiamento, l'uso appropriato dell'equipaggiamento e il comportamento.\n\n"
+            "Verifica nel dettaglio se sono presenti e se vengono rispettate le normative relative a:\n"
+            "- Dispositivi di protezione individuale (DPI): verifica se sono indossati correttamente (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche, ecc.) e se sono appropriati per l'attività svolta.\n"
+            "- Lavori in quota: analizza se le operazioni in quota vengono svolte in sicurezza, con l'utilizzo di imbracature, linee vita o altre misure di protezione adeguate.\n"
+            "- Rischio di caduta di materiali o persone: verifica la presenza di protezioni contro la caduta di oggetti e se le aree di lavoro in elevato sono protette.\n"
+            "- Ponteggi e trabattelli: valuta se sono montati correttamente, se presentano parapetti, tavole fermapiede e se l'accesso è sicuro.\n"
+            "- Attrezzature meccaniche (gru, macchine movimento terra, escavatori, ecc.):\n"
+            "    - Verifica se le attrezzature appaiono in buone condizioni di manutenzione e se sono presenti le marcature CE.\n"
+            "    - Analizza se gli operatori sembrano qualificati e autorizzati all'uso delle specifiche attrezzature.\n"
+            "    - Osserva se le operazioni di movimentazione vengono eseguite in sicurezza, rispettando le portate massime e le procedure operative.\n"
+            "    - Valuta la presenza di segnalatori o assistenti di manovra, se necessari.\n"
+            "    - Verifica la presenza di delimitazioni di sicurezza intorno alle aree operative delle macchine.\n"
+            "- Movimentazione di carichi (in generale): osserva se le operazioni di sollevamento e movimentazione di carichi vengono eseguite in sicurezza, con attrezzature adeguate e personale formato.\n"
+            "- Segnaletica di sicurezza: verifica la presenza e l'adeguatezza della segnaletica di sicurezza (divieti, obblighi, avvertimenti, emergenza).\n"
+            "- Delimitazione e accesso alle aree di lavoro: analizza se le aree pericolose sono adeguatamente delimitate e se l'accesso è controllato.\n"
+            "- Ordine e pulizia del cantiere: valuta se il cantiere è in ordine, pulito e privo di ostacoli che possano causare inciampi o cadute.\n"
+            "- Rischi elettrici: verifica la presenza di cavi scoperti, quadri elettrici non protetti o altre situazioni di potenziale rischio elettrico.\n"
+            "- Rischi da sostanze chimiche: osserva se sono presenti sostanze chimiche pericolose e se sono stoccate e utilizzate in modo sicuro, con la disponibilità di schede di sicurezza e DPI appropriati.\n"
+            "- Rischi meccanici (in generale): analizza la sicurezza delle attrezzature e dei macchinari utilizzati nel cantiere.\n"
+            "- Rischio di scivolamento o inciampo: verifica la presenza di pavimenti bagnati, detriti, o altri ostacoli che potrebbero causare scivolamenti o inciampi.\n"
+            "- Illuminazione: valuta se l'illuminazione del cantiere è adeguata per svolgere le attività in sicurezza.\n"
+            "- Viabilità interna del cantiere: osserva se la circolazione di persone e mezzi avviene in modo sicuro.\n"
+            "- Presenza e corretto utilizzo di scale portatili: verifica se le scale portatili sono in buone condizioni e utilizzate correttamente.\n\n"
+            "Fornisci una nota completa con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati.\n"
+            "Se non sono visibili elementi specifici relativi a una delle categorie sopra elencate, indica che non sono osservabili nell'immagine."
+        )
+    },
     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
 ]}
+
                         
                     ],
                     max_tokens=1000,
