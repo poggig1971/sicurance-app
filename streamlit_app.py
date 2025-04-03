@@ -52,57 +52,6 @@ def semaforo_criticita(n):
     else:
         return "🔴"
 
-def create_pdf_report(report_texts):
-    pdf = FPDF()
-    pdf.set_font("Arial", size=12)
-    pdf.set_margins(15, 15, 15)
-
-    title = "Report Analisi Sicurezza Cantiere"
-    date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-    # Pagina del titolo
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, title, ln=True, align="C")
-    pdf.ln(5)
-    pdf.set_font("Arial", size=10)
-    pdf.cell(0, 10, f"Data e ora di generazione: {date}", ln=True, align="C")
-    pdf.ln(10)
-
-    for image_bytes, label, report, criticita in report_texts:
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 14)
-        pdf.cell(0, 10, f"{label} – {semaforo_criticita(criticita)} {criticita} criticità", ln=True)
-        pdf.ln(5)
-
-        # Inserisci l'immagine
-        try:
-            img = Image.open(BytesIO(image_bytes))
-            width, height = img.size
-            max_width = 190
-            if width > max_width:
-                ratio = max_width / width
-                new_height = int(height * ratio)
-                pdf.image(BytesIO(image_bytes), x=15, y=pdf.get_y(), w=max_width)
-            else:
-                pdf.image(BytesIO(image_bytes), x=15, y=pdf.get_y())
-            pdf.ln(new_height * ratio + 5 if width > max_width else height + 5) # Adjust line break after image
-        except Exception as e:
-            pdf.set_font("Arial", "I", 10)
-            pdf.cell(0, 5, f"Errore nell'inserimento dell'immagine: {e}", ln=True)
-            pdf.set_font("Arial", size=12)
-
-        # Inserisci il testo del report
-        pdf.set_font("Arial", size=10)
-        report = sanitize_text(report)
-        multi_cell_height = get_multicell_height(pdf, report, 190)
-        pdf.multi_cell(190, 5, report)
-        pdf.ln(10)
-
-    buffer = BytesIO()
-    pdf.output(buffer, "S")
-    return buffer.getvalue()
-
 # --- OPENAI CLIENT --- #
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -191,7 +140,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                                     "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
                                     "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
                                     "Fornisci una nota completa con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati."
-                            )},
+)},
                             {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                         ]}
                     ],
@@ -208,16 +157,6 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             for _, label, report, criticita in report_texts:
                 st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
                 st.write(report)
-
-            # --- PULSANTE DOWNLOAD PDF --- #
-            if report_texts:
-                pdf_bytes = create_pdf_report(report_texts)
-                st.download_button(
-                    label="Scarica Report PDF",
-                    data=pdf_bytes,
-                    file_name="report_analisi_sicurezza.pdf",
-                    mime="application/pdf",
-                )
 
         except Exception as e:
             st.error(f"❌ Errore durante l'analisi: {e}")
