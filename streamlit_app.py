@@ -8,7 +8,7 @@ import re
 import os
 from datetime import datetime
 
-# ————— UTILITY FUNCTIONS ————— #
+# --- UTILITY FUNCTIONS --- #
 def sanitize_text(text):
     text = text.replace("’", "'").replace("–", "-").replace("“", '"').replace("”", '"')
     text = re.sub(r'[\u2018\u2019\u201C\u201D]', '', text)
@@ -24,7 +24,7 @@ def get_multicell_height(pdf, text, w):
 
 def evidenzia_criticita(report_text):
     patterns = [
-        r"Criticità:.*",  # Modifica qui: cerca "Criticità:" seguito da qualsiasi carattere
+        r"Criticità:.*",
         r"Rischio di .*",
         r"Non è presente .*",
         r"Assenza di .*",
@@ -36,11 +36,11 @@ def evidenzia_criticita(report_text):
         r"Pericolo di .*",
     ]
     for pattern in patterns:
-        report_text = re.sub(pattern, r" \g<0>", report_text, flags=re.IGNORECASE)  # Usa \g<0> per mantenere il testo trovato
+        report_text = re.sub(pattern, r" \g<0>", report_text, flags=re.IGNORECASE)
     return report_text
 
 def conta_criticita(report_text):
-    return report_text.count("")
+    return len(re.findall(r"\bCriticità:\b", report_text, flags=re.IGNORECASE))
 
 def semaforo_criticita(n):
     if n == 0:
@@ -48,12 +48,12 @@ def semaforo_criticita(n):
     elif n <= 2:
         return "🟡"
     else:
-        return ""
+        return "🔴"
 
-# ————— OPENAI CLIENT ————— #
+# --- OPENAI CLIENT --- #
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# ————— UI SETUP ————— #
+# --- UI SETUP --- #
 st.set_page_config(page_title="TESTING WebApp SicurANCE Piemonte e Valle d'Aosta", layout="centered")
 
 col1, col2 = st.columns([1, 4])
@@ -65,7 +65,7 @@ with col2:
         <h4 style='margin-top: 0;'>Analisi AI della sicurezza nei cantieri</h4>
     """, unsafe_allow_html=True)
 
-# ————— FILE UPLOAD ————— #
+# --- FILE UPLOAD --- #
 MAX_FILE_SIZE_MB = 5
 MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 MAX_IMAGES = 5
@@ -112,7 +112,7 @@ if uploaded_files:
         st.session_state["image_ready"] = False
         st.error("❌ Nessuna immagine valida caricata.")
 
-# ————— PULSANTE AVVIO ————— #
+# --- PULSANTE AVVIO --- #
 if st.button("✅ Avvia l'analisi delle foto"):
     st.session_state["analyze"] = True
 
@@ -150,110 +150,8 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                 st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
                 st.write(report)
 
-            # ——— PDF GENERATION ——— #
-            # (Il codice di generazione del PDF rimane invariato)
-            pdf = FPDF(orientation='P', unit='mm', format='A4')
-            pdf.set_auto_page_break(auto=False, margin=15)
-            pdf.set_font("Helvetica", size=11)
+        except Exception as e:
+            st.error(f"❌ Errore durante l'analisi: {e}")
 
-            def add_header():
-                pdf.set_font("Helvetica", style='B', size=13)
-                pdf.cell(0, 10, sanitize_text("Report"), ln=True, align="C")
-                pdf.set_font("Helvetica", style='', size=11)
-                pdf.cell(0, 10, sanitize_text("Analisi automatica della sicurezza nei cantieri"), ln=True, align="C")
-                pdf.ln(5)
-
-            def add_footer():
-                pdf.set_y(-15)
-                pdf.set_font("Helvetica", size=8)
-                pdf.set_text_color(128)
-                pdf.cell(0, 10, sanitize_text(f"Generato il {datetime.today().strftime('%d/%m/%Y')} - Pagina {pdf.page_no()}"), align='C')
-
-            pdf.add_page()
-            add_header()
-            current_y = 40
-
-            for idx, (img_bytes, img_label, report, _) in enumerate(report_texts):
-                cleaned_label = sanitize_text(img_label)
-                cleaned_report = sanitize_text(report)
-
-                img = Image.open(BytesIO(img_bytes)).convert("RGB")
-                img_w, img_h = img.size
-                ratio = 180 / img_w
-                img_h_resized = img_h * ratio
-                img_path = f"/tmp/temp_{cleaned_label.replace(' ', '_')}.jpg"
-                img.resize((180, int(img_h_resized))).save(img_path)
-
-                if current_y + img_h_resized > pdf.h - 30:
-                    pdf.add_page()
-                    add_header()
-                    current_y = 40
-
-                pdf.image(img_path, x=15, y=current_y, w=180)
-                current_y += img_h_resized + 5
-                os.remove(img_path)
-
-                pdf.set_font("Helvetica", style='B', size=11)
-                label_text = f"{cleaned_label} - Risultato dell'analisi:"
-                text_label_height = get_multicell_height(pdf, label_text, pdf.w - 30)
-                if current_y + text_label_height > pdf.h - 30:
-                    pdf.add_page()
-                    add_header()
-                    current_y = 40
-                pdf.set_y(current_y)
-                pdf.multi_cell(0, 6, label_text)
-                current_y += text_label_height
-
-                pdf.set_font("Helvetica", size=10)
-                text_report_height = get_multicell_height(pdf, cleaned_report, pdf.w - 30)
-                if current_y + text_report_height > pdf.h - 30:
-                    pdf.add_page()
-                    add_header()
-                    current_y = 40
-                pdf.set_y(current_y)
-                pdf.multi_cell(0, 6, cleaned_report)
-                current_y += text_report_height + 10
-
-            # ——— INDICE DELLE CRITICITÀ CON SEMAFORO ——— #
-            pdf.add_page()
-            add_header()
-            pdf.set_font("Helvetica", style='B', size=12)
-            pdf.cell(0, 10, "Indice delle criticità rilevate per immagine:", ln=True)
-            pdf.ln(5)
-            pdf.set_font("Helvetica", size=10)
-            for _, label, _, criticita in report_texts:
-                bollino = semaforo_criticita(criticita)
-                testo = f"{bollino} {sanitize_text(label)}: {criticita} criticità rilevate"
-                pdf.cell(0, 8, testo, ln=True)
-
-            # ——— DISCLAIMER ——— #
-            disclaimer = (
-                "L'app SicurANCE Piemonte e Valle d'Aosta è uno strumento di supporto all’analisi della sicurezza in cantiere. "
-                "Non sostituisce la valutazione tecnica di figure abilitate (es. CSP, CSE, RSPP) e non esonera dagli obblighi di legge. "
-                "Gli autori declinano ogni responsabilità per usi impropri o conseguenze derivanti da quanto riportato nei report generati."
-            )
-
-            pdf.add_page()
-            add_header()
-            pdf.set_font("Helvetica", style='B', size=12)
-            pdf.cell(0, 10, "Disclaimer sull'utilizzo dell'applicativo:", ln=True)
-            pdf.set_font("Helvetica", size=10)
-            pdf.multi_cell(0, 6, sanitize_text(disclaimer))
-
-            for i in range(1, pdf.page_no() + 1):
-                pdf.page = i
-                add_footer()
-
-            pdf_output = BytesIO()
-            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'ignore')
-            pdf_output.write(pdf_bytes)
-            pdf_output.seek(0)
-
-            st.download_button(
-                label=" Scarica il report in PDF",
-                data=pdf_output,
-                file_name="report.pdf",
-                mime="application/pdf"
-            )
-
+        finally:
             st.session_state["analyze"] = False
