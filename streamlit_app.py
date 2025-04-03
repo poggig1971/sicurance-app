@@ -39,7 +39,7 @@ def evidenzia_criticita(report_text):
         report_text = re.sub(pattern, r"🔴 \1", report_text, flags=re.IGNORECASE)
     return report_text
 
-def def conta_criticita(report_text):
+def conta_criticita(report_text):
     pattern = r"(?i)(Criticità:|Rischio di|Non è presente|Assenza di|Mancanza di|Utilizzo non corretto di|DPI.*non.*indossato|Non conforme|Inadempienza|Pericolo di)"
     return len(re.findall(pattern, report_text))
 
