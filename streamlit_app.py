@@ -126,13 +126,19 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     model="gpt-4o",
                     messages=[
                         {"role": "system", "content": (
-                            "Sei un esperto di sicurezza nei cantieri. Rispondi solo sugli aspetti tecnici "
-                            "e normativi secondo il D.Lgs. 81/2008. Non identificare persone. Usa uno stile tecnico, "
-                            "suddiviso per punti. Evidenzia eventuali criticità iniziando la frase con la parola 'Criticità:' e suggerisci azioni correttive.")},
+                            " Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008.")},
                         {"role": "user", "content": [
                             {"type": "text", "text": (
-                                "Analizza la sicurezza dell'immagine allegata secondo il D.Lgs. 81/2008. "
-                                "Verifica DPI, ambiente, comportamenti. Specifica criticità e articoli di riferimento.")},
+                                " Analizza questa immagine come esperto di sicurezza nei cantieri secondo il D.Lgs. 81/2008. "
+                                    "Non devi identificare le persone, ma puoi valutarne l'equipaggiamento e il comportamento. "
+                                    "Verifica nel dettaglio se:\n"
+                                    "- vengono indossati correttamente i dispositivi di protezione individuale (casco, guanti, imbracature, occhiali, scarpe antinfortunistiche)\n"
+                                    "- i lavoratori operano in sicurezza in quota o in prossimità di carichi sospesi\n"
+                                    "- i ponteggi o trabattelli rispettano i requisiti normativi\n"
+                                    "- vi siano segnaletiche, recinzioni o delimitazioni di sicurezza adeguate\n"
+                                    "- l’ambiente di lavoro presenta rischi elettrici, chimici, meccanici, da scivolamento o inciampo\n\n"
+                                    "Fornisci una nota completa con tutte le criticità osservabili nella foto e indica, ove possibile, anche i riferimenti normativi violati."
+)},
                             {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                         ]}
                     ],
