@@ -128,7 +128,7 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
                     model="gpt-4o",
                     messages=[
                         {"role": "system", "content": (
-                            " Sei un esperto in sicurezza nei cantieri edili in Italia. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008.")},
+                            " Sei un esperto in sicurezza nei cantieri edili in Italia. Non devi identificare le persone, ma puoi valutarne l'equipaggiamento, l'uso appropriato dell'equipaggiamento e il comportamento. Rispondi sempre in lingua italiana, anche se il contenuto o l’immagine non fosse chiarissima. Non usare mai frasi introduttive in inglese. Analizza le immagini come se fossi un ispettore del lavoro, secondo il D.Lgs. 81/2008.")},
 
                         {"role": "user", "content": [
     {
