@@ -770,20 +770,26 @@ def show_download_button(report_texts):
         report_texts (list): Lista di tuple (image_bytes, label, report, criticita_count)
     """
     if report_texts:
-        # Genera il PDF
-        pdf_bytes = generate_pdf_report(report_texts)
-        
-        if pdf_bytes:
-            # Mostra il pulsante di download
-            st.download_button(
-                label="📥 Scarica Report PDF",
-                data=pdf_bytes,
-                file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                mime="application/pdf",
-                help="Scarica un report PDF con tutte le analisi"
-            )
-        else:
-            st.error("❌ Impossibile generare il PDF")
+        try:
+            # Genera il PDF
+            pdf_bytes = generate_pdf_report(report_texts)
+            
+            if pdf_bytes:
+                # Mostra il pulsante di download con stile più evidente
+                st.markdown("### 📥 Scarica il report completo")
+                st.download_button(
+                    label="📥 Scarica Report PDF",
+                    data=pdf_bytes,
+                    file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                    mime="application/pdf",
+                    help="Scarica un report PDF con tutte le analisi",
+                    use_container_width=True
+                )
+            else:
+                st.error("❌ Impossibile generare il PDF")
+        except Exception as e:
+            st.error(f"❌ Errore nella generazione del PDF: {e}")
+            logger.error(f"Errore nella generazione del PDF: {e}")
 
 def show_error_messages(messages):
     """
@@ -940,6 +946,13 @@ def main():
             finally:
                 # Reimposta lo stato di analisi
                 st.session_state["analyze"] = False
+    
+    # Mostra il pulsante di download anche dopo il ricaricamento della pagina se ci sono report
+    if st.session_state.get("report_generated") and st.session_state.get("report_texts"):
+        # Aggiungi una separazione visiva
+        st.markdown("---")
+        # Mostra il pulsante di download
+        show_download_button(st.session_state["report_texts"])
     
     # Mostra l'avvertenza legale
     show_disclaimer(expanded=False)
