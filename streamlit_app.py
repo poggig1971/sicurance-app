@@ -52,7 +52,7 @@ def semaforo_criticita(n):
     else:
         return "🔴"
 
-ddef generate_pdf_report(report_texts):
+def generate_pdf_report(report_texts):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
