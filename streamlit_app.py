@@ -20,6 +20,231 @@ from openai import OpenAI
 from openai import OpenAIError, APIError, RateLimitError, APIConnectionError, AuthenticationError
 
 
+# ---- FUNZIONI UI ---- #
+
+def setup_page():
+    """
+    Configura la pagina Streamlit con titolo e layout.
+    """
+    st.set_page_config(
+        page_title=APP_TITLE,
+        layout="centered",
+        initial_sidebar_state="collapsed"
+    )
+    
+    # Rimuove il menu hamburger e il footer
+    hide_menu_style = """
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        </style>
+    """
+    st.markdown(hide_menu_style, unsafe_allow_html=True)
+
+def show_header():
+    """
+    Mostra l'intestazione dell'applicazione con logo e titolo.
+    """
+    col1, col2 = st.columns([1, 4])
+
+# Header
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("logo_ance.jpg", width=220)
+with col2:
+    st.markdown("""
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TEST SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
+    """, unsafe_allow_html=True)
+
+
+def show_disclaimer(expanded=True):
+    """
+    Mostra l'avvertenza legale in un expander.
+    
+    Args:
+        expanded (bool): Se True, l'expander è aperto di default
+    """
+    with st.expander("ℹ️ Avvertenza sull'utilizzo dell'app", expanded=expanded):
+        st.markdown(DISCLAIMER_TEXT, unsafe_allow_html=True)
+
+def show_file_uploader():
+    """
+    Mostra l'uploader di file con informazioni sui limiti.
+    
+    Returns:
+        list: Lista di file caricati
+    """
+    uploaded_files = st.file_uploader(
+        f"Carica fino a {MAX_IMAGES} foto del cantiere (max {MAX_FILE_SIZE_MB} MB per immagine)",
+        type=ALLOWED_EXTENSIONS,
+        accept_multiple_files=True,
+        help=f"Formati supportati: {', '.join(ALLOWED_EXTENSIONS)}. Le immagini verranno ridimensionate se necessario."
+    )
+    
+    return uploaded_files
+
+def show_image_preview(img_bytes, caption):
+    """
+    Mostra l'anteprima di un'immagine.
+    
+    Args:
+        img_bytes (bytes): Immagine in formato bytes
+        caption (str): Didascalia dell'immagine
+    """
+    st.image(BytesIO(img_bytes), caption=caption, use_container_width=True)
+
+def show_analyze_button():
+    """
+    Mostra il pulsante per avviare l'analisi.
+    
+    Returns:
+        bool: True se il pulsante è stato premuto
+    """
+    return st.button("✅ Avvia l'analisi delle foto", use_container_width=True)
+
+def show_progress(current, total, current_item=""):
+    """
+    Mostra una barra di progresso.
+    
+    Args:
+        current (int): Valore corrente
+        total (int): Valore totale
+        current_item (str): Nome dell'elemento corrente
+    """
+    if total > 0:
+        progress_text = f"Analisi in corso... {current+1}/{total}"
+        if current_item:
+            progress_text += f" ({current_item})"
+        
+        progress_bar = st.progress(0)
+        progress_value = float(current) / float(total)
+        progress_bar.progress(progress_value, text=progress_text)
+        
+        # Aggiorna lo stato di avanzamento nella sessione
+        st.session_state["processing_progress"] = progress_value
+        st.session_state["current_image"] = current_item
+
+def show_report(image_bytes, label, report, criticita_count):
+    """
+    Mostra un report di analisi.
+    
+    Args:
+        image_bytes (bytes): Immagine in formato bytes
+        label (str): Etichetta del report
+        report (str): Testo del report
+        criticita_count (int): Numero di criticità rilevate
+    """
+    # Crea un expander per ogni report
+    with st.expander(f"{label} – {semaforo_criticita(criticita_count)} {criticita_count} criticità", expanded=True):
+        # Mostra l'immagine e il report in colonne affiancate
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.image(BytesIO(image_bytes), use_container_width=True)
+        
+        with col2:
+            st.markdown(report)
+
+def show_reports(report_texts):
+    """
+    Mostra tutti i report di analisi.
+    
+    Args:
+        report_texts (list): Lista di tuple (image_bytes, label, report, criticita_count)
+    """
+    st.success("✅ Analisi completata")
+    
+    # Mostra un riepilogo delle criticità
+    total_criticita = sum(criticita for _, _, _, criticita in report_texts)
+    st.markdown(f"### Riepilogo: {total_criticita} criticità totali in {len(report_texts)} immagini")
+    
+    # Mostra i singoli report
+    for image_bytes, label, report, criticita in report_texts:
+        show_report(image_bytes, label, report, criticita)
+
+def show_download_button(report_texts):
+    """
+    Mostra un pulsante per scaricare il report in formato PDF.
+    
+    Args:
+        report_texts (list): Lista di tuple (image_bytes, label, report, criticita_count)
+    """
+    if report_texts:
+        try:
+            # Genera il PDF
+            pdf_bytes = generate_pdf_report(report_texts)
+            
+            if pdf_bytes:
+                # Mostra il pulsante di download con stile più evidente
+                st.markdown("### 📥 Scarica il report completo")
+                st.download_button(
+                    label="📥 Scarica Report PDF",
+                    data=pdf_bytes,
+                    file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+                    mime="application/pdf",
+                    help="Scarica un report PDF con tutte le analisi",
+                    use_container_width=True
+                )
+            else:
+                st.error("❌ Impossibile generare il PDF")
+        except Exception as e:
+            st.error(f"❌ Errore nella generazione del PDF: {e}")
+            logger.error(f"Errore nella generazione del PDF: {e}")
+
+def show_error_messages(messages):
+    """
+    Mostra messaggi di errore.
+    
+    Args:
+        messages (list): Lista di messaggi di errore
+    """
+    for message in messages:
+        if "⚠️" in message:
+            st.warning(message)
+        elif "❌" in message:
+            st.error(message)
+        elif "ℹ️" in message:
+            st.info(message)
+        else:
+            st.info(message)
+
+def show_settings():
+    """
+    Mostra un pannello di impostazioni nella sidebar.
+    """
+    with st.sidebar:
+        st.title("Impostazioni")
+        
+        # Impostazioni per l'analisi delle immagini
+        st.subheader("Analisi immagini")
+        
+        # Qualità della compressione
+        quality = st.slider(
+            "Qualità immagini (%)",
+            min_value=50,
+            max_value=100,
+            value=85,
+            step=5,
+            help="Qualità della compressione JPEG. Valori più bassi riducono la dimensione del file ma possono peggiorare la qualità."
+        )
+        
+        # Opzioni per il report
+        st.subheader("Report")
+        
+        # Inclusione delle immagini nel PDF
+        include_images = st.checkbox(
+            "Includi immagini nel PDF",
+            value=True,
+            help="Se selezionato, le immagini verranno incluse nel report PDF."
+        )
+        
+        # Restituisci le impostazioni
+        return {
+            "quality": quality,
+            "include_images": include_images
+        }
+
 # ---- CONFIGURAZIONE ---- #
 
 # Configurazione del logging
@@ -621,230 +846,7 @@ def analyze_images_batch(images, progress_callback=None):
     
     return results, errors
 
-# ---- FUNZIONI UI ---- #
 
-def setup_page():
-    """
-    Configura la pagina Streamlit con titolo e layout.
-    """
-    st.set_page_config(
-        page_title=APP_TITLE,
-        layout="centered",
-        initial_sidebar_state="collapsed"
-    )
-    
-    # Rimuove il menu hamburger e il footer
-    hide_menu_style = """
-        <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        </style>
-    """
-    st.markdown(hide_menu_style, unsafe_allow_html=True)
-
-def show_header():
-    """
-    Mostra l'intestazione dell'applicazione con logo e titolo.
-    """
-    col1, col2 = st.columns([1, 4])
-
-# Header
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.image("logo_ance.jpg", width=220)
-with col2:
-    st.markdown("""
-        <h1 style='font-size: 24px; margin-bottom: 5px;'> TEST SicurANCE Piemonte e Valle d'Aosta</h1>
-        <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
-    """, unsafe_allow_html=True)
-
-
-def show_disclaimer(expanded=True):
-    """
-    Mostra l'avvertenza legale in un expander.
-    
-    Args:
-        expanded (bool): Se True, l'expander è aperto di default
-    """
-    with st.expander("ℹ️ Avvertenza sull'utilizzo dell'app", expanded=expanded):
-        st.markdown(DISCLAIMER_TEXT, unsafe_allow_html=True)
-
-def show_file_uploader():
-    """
-    Mostra l'uploader di file con informazioni sui limiti.
-    
-    Returns:
-        list: Lista di file caricati
-    """
-    uploaded_files = st.file_uploader(
-        f"Carica fino a {MAX_IMAGES} foto del cantiere (max {MAX_FILE_SIZE_MB} MB per immagine)",
-        type=ALLOWED_EXTENSIONS,
-        accept_multiple_files=True,
-        help=f"Formati supportati: {', '.join(ALLOWED_EXTENSIONS)}. Le immagini verranno ridimensionate se necessario."
-    )
-    
-    return uploaded_files
-
-def show_image_preview(img_bytes, caption):
-    """
-    Mostra l'anteprima di un'immagine.
-    
-    Args:
-        img_bytes (bytes): Immagine in formato bytes
-        caption (str): Didascalia dell'immagine
-    """
-    st.image(BytesIO(img_bytes), caption=caption, use_container_width=True)
-
-def show_analyze_button():
-    """
-    Mostra il pulsante per avviare l'analisi.
-    
-    Returns:
-        bool: True se il pulsante è stato premuto
-    """
-    return st.button("✅ Avvia l'analisi delle foto", use_container_width=True)
-
-def show_progress(current, total, current_item=""):
-    """
-    Mostra una barra di progresso.
-    
-    Args:
-        current (int): Valore corrente
-        total (int): Valore totale
-        current_item (str): Nome dell'elemento corrente
-    """
-    if total > 0:
-        progress_text = f"Analisi in corso... {current+1}/{total}"
-        if current_item:
-            progress_text += f" ({current_item})"
-        
-        progress_bar = st.progress(0)
-        progress_value = float(current) / float(total)
-        progress_bar.progress(progress_value, text=progress_text)
-        
-        # Aggiorna lo stato di avanzamento nella sessione
-        st.session_state["processing_progress"] = progress_value
-        st.session_state["current_image"] = current_item
-
-def show_report(image_bytes, label, report, criticita_count):
-    """
-    Mostra un report di analisi.
-    
-    Args:
-        image_bytes (bytes): Immagine in formato bytes
-        label (str): Etichetta del report
-        report (str): Testo del report
-        criticita_count (int): Numero di criticità rilevate
-    """
-    # Crea un expander per ogni report
-    with st.expander(f"{label} – {semaforo_criticita(criticita_count)} {criticita_count} criticità", expanded=True):
-        # Mostra l'immagine e il report in colonne affiancate
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
-            st.image(BytesIO(image_bytes), use_container_width=True)
-        
-        with col2:
-            st.markdown(report)
-
-def show_reports(report_texts):
-    """
-    Mostra tutti i report di analisi.
-    
-    Args:
-        report_texts (list): Lista di tuple (image_bytes, label, report, criticita_count)
-    """
-    st.success("✅ Analisi completata")
-    
-    # Mostra un riepilogo delle criticità
-    total_criticita = sum(criticita for _, _, _, criticita in report_texts)
-    st.markdown(f"### Riepilogo: {total_criticita} criticità totali in {len(report_texts)} immagini")
-    
-    # Mostra i singoli report
-    for image_bytes, label, report, criticita in report_texts:
-        show_report(image_bytes, label, report, criticita)
-
-def show_download_button(report_texts):
-    """
-    Mostra un pulsante per scaricare il report in formato PDF.
-    
-    Args:
-        report_texts (list): Lista di tuple (image_bytes, label, report, criticita_count)
-    """
-    if report_texts:
-        try:
-            # Genera il PDF
-            pdf_bytes = generate_pdf_report(report_texts)
-            
-            if pdf_bytes:
-                # Mostra il pulsante di download con stile più evidente
-                st.markdown("### 📥 Scarica il report completo")
-                st.download_button(
-                    label="📥 Scarica Report PDF",
-                    data=pdf_bytes,
-                    file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                    mime="application/pdf",
-                    help="Scarica un report PDF con tutte le analisi",
-                    use_container_width=True
-                )
-            else:
-                st.error("❌ Impossibile generare il PDF")
-        except Exception as e:
-            st.error(f"❌ Errore nella generazione del PDF: {e}")
-            logger.error(f"Errore nella generazione del PDF: {e}")
-
-def show_error_messages(messages):
-    """
-    Mostra messaggi di errore.
-    
-    Args:
-        messages (list): Lista di messaggi di errore
-    """
-    for message in messages:
-        if "⚠️" in message:
-            st.warning(message)
-        elif "❌" in message:
-            st.error(message)
-        elif "ℹ️" in message:
-            st.info(message)
-        else:
-            st.info(message)
-
-def show_settings():
-    """
-    Mostra un pannello di impostazioni nella sidebar.
-    """
-    with st.sidebar:
-        st.title("Impostazioni")
-        
-        # Impostazioni per l'analisi delle immagini
-        st.subheader("Analisi immagini")
-        
-        # Qualità della compressione
-        quality = st.slider(
-            "Qualità immagini (%)",
-            min_value=50,
-            max_value=100,
-            value=85,
-            step=5,
-            help="Qualità della compressione JPEG. Valori più bassi riducono la dimensione del file ma possono peggiorare la qualità."
-        )
-        
-        # Opzioni per il report
-        st.subheader("Report")
-        
-        # Inclusione delle immagini nel PDF
-        include_images = st.checkbox(
-            "Includi immagini nel PDF",
-            value=True,
-            help="Se selezionato, le immagini verranno incluse nel report PDF."
-        )
-        
-        # Restituisci le impostazioni
-        return {
-            "quality": quality,
-            "include_images": include_images
-        }
 
 # ---- APPLICAZIONE PRINCIPALE ---- #
 
