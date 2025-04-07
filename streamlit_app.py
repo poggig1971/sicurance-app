@@ -53,6 +53,18 @@ def semaforo_criticita(n):
         return "🔴"
 
 def generate_pdf_report(report_texts):
+    import shutil
+
+    # Crea la cartella semafori se non esiste
+    semafori_dir = "semafori"
+    if not os.path.exists(semafori_dir):
+        os.makedirs(semafori_dir)
+
+    # Sposta le immagini dei semafori se sono nella root del progetto
+    for img_name in ["green_light.png", "yellow_light.png", "red_light.png"]:
+        if os.path.exists(img_name):
+            shutil.move(img_name, os.path.join(semafori_dir, img_name))
+
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -66,31 +78,31 @@ def generate_pdf_report(report_texts):
 
     for i, (image_bytes, label, report, criticita) in enumerate(report_texts):
         pdf.set_font("Helvetica", 'B', 14)
-
         emoji = semaforo_criticita(criticita)
 
-        pdf.cell(200, 10, f"{label} - {criticita} criticità", ln=False) # ln=False per posizionare l'immagine sulla stessa linea
+        pdf.cell(0, 10, f"{label} - {criticita} criticità", ln=True)
 
-        if emoji == "🟢":
+        # Inserisci l'immagine semaforo sulla riga successiva, centrata rispetto al testo
+        semaforo_path = {
+            "🟢": os.path.join(semafori_dir, "green_light.png"),
+            "🟡": os.path.join(semafori_dir, "yellow_light.png"),
+            "🔴": os.path.join(semafori_dir, "red_light.png")
+        }.get(emoji, "")
+
+        if os.path.exists(semaforo_path):
             try:
-                pdf.image("green_light.png", x=pdf.get_x() + 5, y=pdf.get_y() - 8, w=8, h=8)
+                x = pdf.get_x() + 5
+                y = pdf.get_y()
+                pdf.image(semaforo_path, x=x, y=y, w=8, h=8)
             except Exception as e:
-                pdf.cell(10, 10, "[VERDE]", ln=True)
-        elif emoji == "🟡":
-            try:
-                pdf.image("yellow_light.png", x=pdf.get_x() + 5, y=pdf.get_y() - 8, w=8, h=8)
-            except Exception as e:
-                pdf.cell(10, 10, "[GIALLO]", ln=True)
+                pdf.cell(10, 10, f"[{emoji}]", ln=True)
         else:
-            try:
-                pdf.image("red_light.png", x=pdf.get_x() + 5, y=pdf.get_y() - 8, w=8, h=8)
-            except Exception as e:
-                pdf.cell(10, 10, "[ROSSO]", ln=True)
+            pdf.cell(10, 10, f"[{emoji}]", ln=True)
 
-        pdf.ln(10) # Sposta a una nuova linea dopo il titolo e l'immagine
+        pdf.ln(12)
         pdf.set_font("Helvetica", size=12)
-        pdf.ln(5)
 
+        # Inserisci immagine analizzata
         temp_image_path = f"temp_image_{i}.jpg"
         with open(temp_image_path, "wb") as f:
             f.write(image_bytes)
