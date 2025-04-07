@@ -651,7 +651,7 @@ def show_header():
     with col1:
         # Logo placeholder
         st.markdown("🏗️")
-    
+st.image("logo_aNCE.png", width=200)    
     with col2:
         st.markdown(f"""
             <h1 style='font-size: 24px; margin-bottom: 5px;'>{APP_TITLE}</h1>
