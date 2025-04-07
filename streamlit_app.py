@@ -206,7 +206,6 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
     },
     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
 ]}
-
                         
                     ],
                     max_tokens=1000,
@@ -222,7 +221,34 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             for _, label, report, criticita in report_texts:
                 st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
                 st.write(report)
-# --- GENERA E SCARICA PDF --- #
+
+        except Exception as e:
+            st.error(f"❌ Errore durante l'analisi: {e}")
+
+        finally:
+            st.session_state["analyze"] = False
+
+
+
+try:
+    # ANALISI IMMAGINI
+    for i, image_bytes in enumerate(st.session_state["uploaded_images"]):
+        ...
+        report_texts.append(...)
+
+    st.success("✅ Analisi completata")
+    st.markdown("### Report:")
+    for _, label, report, criticita in report_texts:
+        st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
+        st.write(report)
+
+except Exception as e:
+    st.error(f"❌ Errore durante l'analisi: {e}")
+
+finally:
+    st.session_state["analyze"] = False
+
+# ⬇️ ORA PUOI METTERE QUI IL PDF
 if report_texts:
     pdf_buffer = generate_pdf_report(report_texts)
     st.markdown("### 📥 Scarica il report completo in PDF")
@@ -232,12 +258,6 @@ if report_texts:
         file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
         mime="application/pdf"
     )
-
-        except Exception as e:
-            st.error(f"❌ Errore durante l'analisi: {e}")
-
-        finally:
-            st.session_state["analyze"] = False
 
 # ————— AVVERTENZA ————— #
 with st.expander("ℹ️ Avvertenza sull’utilizzo dell’app", expanded=True):
