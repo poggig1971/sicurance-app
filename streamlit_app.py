@@ -52,7 +52,7 @@ def semaforo_criticita(n):
     else:
         return "🔴"
 
-def generate_pdf_report(report_texts):
+ddef generate_pdf_report(report_texts):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -67,16 +67,27 @@ def generate_pdf_report(report_texts):
     for i, (image_bytes, label, report, criticita) in enumerate(report_texts):
         pdf.set_font("Helvetica", 'B', 14)
 
-        # Converti l'emoji semaforo in simboli compatibili
         emoji = semaforo_criticita(criticita)
-        if emoji == "🟢":
-            emoji_txt = "[VERDE]"
-        elif emoji == "🟡":
-            emoji_txt = "[GIALLO]"
-        else:
-            emoji_txt = "[ROSSO]"
 
-        pdf.cell(200, 10, f"{label} - {criticita} criticità - {emoji_txt}", ln=True)
+        pdf.cell(200, 10, f"{label} - {criticita} criticità", ln=False) # ln=False per posizionare l'immagine sulla stessa linea
+
+        if emoji == "🟢":
+            try:
+                pdf.image("green_light.png", x=pdf.get_x() + 5, y=pdf.get_y() - 8, w=8, h=8)
+            except Exception as e:
+                pdf.cell(10, 10, "[VERDE]", ln=True)
+        elif emoji == "🟡":
+            try:
+                pdf.image("yellow_light.png", x=pdf.get_x() + 5, y=pdf.get_y() - 8, w=8, h=8)
+            except Exception as e:
+                pdf.cell(10, 10, "[GIALLO]", ln=True)
+        else:
+            try:
+                pdf.image("red_light.png", x=pdf.get_x() + 5, y=pdf.get_y() - 8, w=8, h=8)
+            except Exception as e:
+                pdf.cell(10, 10, "[ROSSO]", ln=True)
+
+        pdf.ln(10) # Sposta a una nuova linea dopo il titolo e l'immagine
         pdf.set_font("Helvetica", size=12)
         pdf.ln(5)
 
@@ -93,7 +104,6 @@ def generate_pdf_report(report_texts):
 
         os.remove(temp_image_path)
 
-        # Rimuovi emoji dal testo del report
         clean_report = report.replace("🔴 ", ">> ")
         pdf.multi_cell(0, 10, sanitize_text(clean_report))
         pdf.ln(10)
