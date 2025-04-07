@@ -229,36 +229,6 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             st.session_state["analyze"] = False
 
 
-
-try:
-    # ANALISI IMMAGINI
-    for i, image_bytes in enumerate(st.session_state["uploaded_images"]):
-        ...
-        report_texts.append(...)
-
-    st.success("✅ Analisi completata")
-    st.markdown("### Report:")
-    for _, label, report, criticita in report_texts:
-        st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
-        st.write(report)
-
-except Exception as e:
-    st.error(f"❌ Errore durante l'analisi: {e}")
-
-finally:
-    st.session_state["analyze"] = False
-
-# ⬇️ ORA PUOI METTERE QUI IL PDF
-if report_texts:
-    pdf_buffer = generate_pdf_report(report_texts)
-    st.markdown("### 📥 Scarica il report completo in PDF")
-    st.download_button(
-        label="📄 Scarica Report PDF",
-        data=pdf_buffer,
-        file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-        mime="application/pdf"
-    )
-
 # ————— AVVERTENZA ————— #
 with st.expander("ℹ️ Avvertenza sull’utilizzo dell’app", expanded=True):
     st.markdown("""
