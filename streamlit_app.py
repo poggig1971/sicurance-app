@@ -647,16 +647,17 @@ def show_header():
     Mostra l'intestazione dell'applicazione con logo e titolo.
     """
     col1, col2 = st.columns([1, 4])
-    
-    with col1:
-        # Logo placeholder
-        st.markdown("🏗️")
-st.image("logo_aNCE.png", width=200)    
-    with col2:
-        st.markdown(f"""
-            <h1 style='font-size: 24px; margin-bottom: 5px;'>{APP_TITLE}</h1>
-            <h4 style='margin-top: 0;'>{APP_SUBTITLE}</h4>
-        """, unsafe_allow_html=True)
+
+# Header
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("logo_ance.jpg", width=220)
+with col2:
+    st.markdown("""
+        <h1 style='font-size: 24px; margin-bottom: 5px;'> TEST SicurANCE Piemonte e Valle d'Aosta</h1>
+        <h4 style='margin-top: 0;'>Analisi automatica della sicurezza nei cantieri</h4>
+    """, unsafe_allow_html=True)
+
 
 def show_disclaimer(expanded=True):
     """
