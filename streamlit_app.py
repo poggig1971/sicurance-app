@@ -52,6 +52,46 @@ def semaforo_criticita(n):
     else:
         return "🔴"
 
+def generate_pdf_report(report_texts):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.set_font("Helvetica", size=12)
+
+    pdf.set_font("Helvetica", 'B', 16)
+    pdf.cell(200, 10, "Report Sicurezza Cantiere", ln=True, align='C')
+    pdf.set_font("Helvetica", size=12)
+    pdf.cell(200, 10, f"Data: {datetime.now().strftime('%d/%m/%Y')}", ln=True)
+    pdf.ln(10)
+
+    for i, (image_bytes, label, report, criticita) in enumerate(report_texts):
+        pdf.set_font("Helvetica", 'B', 14)
+        pdf.cell(200, 10, f"{label} – {criticita} criticità – {semaforo_criticita(criticita)}", ln=True)
+        pdf.set_font("Helvetica", size=12)
+        pdf.ln(5)
+
+        # Salva e inserisci immagine
+        temp_image_path = f"temp_image_{i}.jpg"
+        with open(temp_image_path, "wb") as f:
+            f.write(image_bytes)
+
+        try:
+            pdf.image(temp_image_path, x=10, w=100)
+        except:
+            pdf.set_text_color(255, 0, 0)
+            pdf.cell(200, 10, "Immagine non disponibile", ln=True)
+            pdf.set_text_color(0, 0, 0)
+
+        os.remove(temp_image_path)
+        clean_report = re.sub(r'🔴 ', '', report)
+        pdf.multi_cell(0, 10, sanitize_text(clean_report))
+        pdf.ln(10)
+
+    buffer = BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+    return buffer
+
 # --- OPENAI CLIENT --- #
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
