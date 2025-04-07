@@ -222,6 +222,16 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             for _, label, report, criticita in report_texts:
                 st.subheader(f"{label} – {semaforo_criticita(criticita)} {criticita} criticità")
                 st.write(report)
+# --- GENERA E SCARICA PDF --- #
+if report_texts:
+    pdf_buffer = generate_pdf_report(report_texts)
+    st.markdown("### 📥 Scarica il report completo in PDF")
+    st.download_button(
+        label="📄 Scarica Report PDF",
+        data=pdf_buffer,
+        file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+        mime="application/pdf"
+    )
 
         except Exception as e:
             st.error(f"❌ Errore durante l'analisi: {e}")
