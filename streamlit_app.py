@@ -17,7 +17,8 @@ from fpdf import FPDF
 import os
 import tempfile
 from openai import OpenAI
-from openai.types.error import APIError, RateLimitError, APIConnectionError, AuthenticationError
+from openai import OpenAIError, APIError, RateLimitError, APIConnectionError, AuthenticationError
+
 
 # ---- CONFIGURAZIONE ---- #
 
