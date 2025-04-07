@@ -66,11 +66,20 @@ def generate_pdf_report(report_texts):
 
     for i, (image_bytes, label, report, criticita) in enumerate(report_texts):
         pdf.set_font("Helvetica", 'B', 14)
-        pdf.cell(200, 10, f"{label} – {criticita} criticità – {semaforo_criticita(criticita)}", ln=True)
+
+        # Converti l'emoji semaforo in simboli compatibili
+        emoji = semaforo_criticita(criticita)
+        if emoji == "🟢":
+            emoji_txt = "[VERDE]"
+        elif emoji == "🟡":
+            emoji_txt = "[GIALLO]"
+        else:
+            emoji_txt = "[ROSSO]"
+
+        pdf.cell(200, 10, f"{label} - {criticita} criticità - {emoji_txt}", ln=True)
         pdf.set_font("Helvetica", size=12)
         pdf.ln(5)
 
-        # Salva e inserisci immagine
         temp_image_path = f"temp_image_{i}.jpg"
         with open(temp_image_path, "wb") as f:
             f.write(image_bytes)
@@ -83,7 +92,9 @@ def generate_pdf_report(report_texts):
             pdf.set_text_color(0, 0, 0)
 
         os.remove(temp_image_path)
-        clean_report = re.sub(r'🔴 ', '', report)
+
+        # Rimuovi emoji dal testo del report
+        clean_report = report.replace("🔴 ", ">> ")
         pdf.multi_cell(0, 10, sanitize_text(clean_report))
         pdf.ln(10)
 
