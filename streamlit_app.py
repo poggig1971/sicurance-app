@@ -53,17 +53,16 @@ def semaforo_criticita(n):
         return "🔴"
 
 def generate_pdf_report(report_texts):
-    import shutil
+    # Assicurati che la cartella 'icons' esista
+    icons_folder = "icons"
+    os.makedirs(icons_folder, exist_ok=True)
 
-    # Crea la cartella semafori se non esiste
-    semafori_dir = "semafori"
-    if not os.path.exists(semafori_dir):
-        os.makedirs(semafori_dir)
-
-    # Sposta le immagini dei semafori se sono nella root del progetto
-    for img_name in ["green_light.png", "yellow_light.png", "red_light.png"]:
-        if os.path.exists(img_name):
-            shutil.move(img_name, os.path.join(semafori_dir, img_name))
+    # Percorsi immagini semafori
+    semafori = {
+        "🟢": os.path.join(icons_folder, "green_light.png"),
+        "🟡": os.path.join(icons_folder, "yellow_light.png"),
+        "🔴": os.path.join(icons_folder, "red_light.png"),
+    }
 
     pdf = FPDF()
     pdf.add_page()
@@ -78,31 +77,29 @@ def generate_pdf_report(report_texts):
 
     for i, (image_bytes, label, report, criticita) in enumerate(report_texts):
         pdf.set_font("Helvetica", 'B', 14)
+
         emoji = semaforo_criticita(criticita)
 
-        pdf.cell(0, 10, f"{label} - {criticita} criticità", ln=True)
+        # Posizione iniziale per testo + icona
+        x_start = pdf.get_x()
+        y_start = pdf.get_y()
 
-        # Inserisci l'immagine semaforo sulla riga successiva, centrata rispetto al testo
-        semaforo_path = {
-            "🟢": os.path.join(semafori_dir, "green_light.png"),
-            "🟡": os.path.join(semafori_dir, "yellow_light.png"),
-            "🔴": os.path.join(semafori_dir, "red_light.png")
-        }.get(emoji, "")
+        # Scrive il testo
+        pdf.cell(160, 10, f"{label} - {criticita} criticità", ln=0)
 
-        if os.path.exists(semaforo_path):
-            try:
-                x = pdf.get_x() + 5
-                y = pdf.get_y()
-                pdf.image(semaforo_path, x=x, y=y, w=8, h=8)
-            except Exception as e:
-                pdf.cell(10, 10, f"[{emoji}]", ln=True)
-        else:
-            pdf.cell(10, 10, f"[{emoji}]", ln=True)
+        # Inserisce l’immagine del semaforo a destra del testo
+        try:
+            if emoji in semafori and os.path.exists(semafori[emoji]):
+                pdf.image(semafori[emoji], x=pdf.get_x() + 2, y=y_start + 1, w=7, h=7)
+            else:
+                pdf.cell(10, 10, f"[{emoji}]", ln=0)
+        except Exception as e:
+            pdf.cell(10, 10, f"[{emoji}]", ln=0)
 
         pdf.ln(12)
         pdf.set_font("Helvetica", size=12)
 
-        # Inserisci immagine analizzata
+        # Inserisce immagine del cantiere
         temp_image_path = f"temp_image_{i}.jpg"
         with open(temp_image_path, "wb") as f:
             f.write(image_bytes)
@@ -116,6 +113,7 @@ def generate_pdf_report(report_texts):
 
         os.remove(temp_image_path)
 
+        # Rimuove emoji rosse e scrive il testo
         clean_report = report.replace("🔴 ", ">> ")
         pdf.multi_cell(0, 10, sanitize_text(clean_report))
         pdf.ln(10)
@@ -124,6 +122,7 @@ def generate_pdf_report(report_texts):
     pdf.output(buffer)
     buffer.seek(0)
     return buffer
+
 
 # --- OPENAI CLIENT --- #
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
