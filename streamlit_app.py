@@ -229,6 +229,17 @@ if st.session_state.get("analyze") and st.session_state.get("image_ready"):
             st.session_state["analyze"] = False
 
 
+# --- GENERAZIONE E SCARICAMENTO PDF --- #
+if 'report_texts' in locals() and report_texts:
+    pdf_buffer = generate_pdf_report(report_texts)
+    st.markdown("### 📥 Scarica il report completo in PDF")
+    st.download_button(
+        label="📄 Scarica Report PDF",
+        data=pdf_buffer,
+        file_name=f"report_sicurezza_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+        mime="application/pdf"
+    )
+
 # ————— AVVERTENZA ————— #
 with st.expander("ℹ️ Avvertenza sull’utilizzo dell’app", expanded=True):
     st.markdown("""
