@@ -14,6 +14,21 @@ def sanitize_text(text):
     text = re.sub(r'[\u2018\u2019\u201C\u201D]', '', text)
     return text.encode('latin-1', 'ignore').decode('latin-1')
 
+# --- OFFUSCA VOLTI NELLE IMMAGINI --- #
+import cv2
+import numpy as np
+
+def offusca_volti(image_pil):
+    cv_image = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4)
+    for (x, y, w, h) in faces:
+        roi = cv_image[y:y+h, x:x+w]
+        roi = cv2.GaussianBlur(roi, (35, 35), 30)
+        cv_image[y:y+h, x:x+w] = roi
+    return Image.fromarray(cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB))
+
 def get_multicell_height(pdf, text, w):
     temp_pdf = FPDF()
     temp_pdf.add_page()
