@@ -2,3 +2,5 @@ streamlit
 openai>=1.0.0
 requests
 fpdf
+opencv-python
+Pillow
