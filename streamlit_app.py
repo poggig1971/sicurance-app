@@ -157,28 +157,38 @@ if uploaded_files:
         uploaded_files = uploaded_files[:MAX_IMAGES]
 
     valid_images = []
-    for file in uploaded_files:
-        if file.size > MAX_FILE_SIZE:
-            st.warning(f"⚠️ Il file '{file.name}' supera il limite di {MAX_FILE_SIZE_MB} MB e verrà ignorato.")
-            continue
 
-        try:
-            image = Image.open(file)
-            if image.width > MAX_WIDTH:
-                ratio = MAX_WIDTH / image.width
-                new_size = (MAX_WIDTH, int(image.height * ratio))
-                image = image.resize(new_size)
-                st.info(f"ℹ️ L'immagine '{file.name}' è stata ridimensionata.")
+for file in uploaded_files:
+    if file.size > MAX_FILE_SIZE:
+        st.warning(f"⚠️ Il file '{file.name}' supera il limite di {MAX_FILE_SIZE_MB} MB e verrà ignorato.")
+        continue
 
-            buffered = BytesIO()
-            image = ImageOps.exif_transpose(image)
-            image.save(buffered, format="JPEG", quality=85)
-            img_bytes = buffered.getvalue()
-            valid_images.append(img_bytes)
-            st.image(BytesIO(img_bytes), caption=f"{file.name}", use_container_width=True)
-        except Exception as e:
-            st.error(f"❌ Errore con il file '{file.name}': {e}")
+    try:
+        image = Image.open(file)
 
+        if image.width > MAX_WIDTH:
+            ratio = MAX_WIDTH / image.width
+            new_size = (MAX_WIDTH, int(image.height * ratio))
+            image = image.resize(new_size)
+            st.info(f"ℹ️ L'immagine '{file.name}' è stata ridimensionata.")
+
+        image = ImageOps.exif_transpose(image)
+
+        # --- QUI offusca i volti prima di salvare ---
+        image = offusca_volti(image)
+
+        buffered = BytesIO()
+        image.save(buffered, format="JPEG", quality=85)
+        img_bytes = buffered.getvalue()
+
+        valid_images.append(img_bytes)
+        st.image(BytesIO(img_bytes), caption=f"{file.name}", use_container_width=True)
+
+    except Exception as e:
+        st.error(f"❌ Errore con il file '{file.name}': {e}")
+
+
+    
     if valid_images:
         st.session_state["uploaded_images"] = valid_images
         st.session_state["image_ready"] = True
